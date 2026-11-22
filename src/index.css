@@ -3,41 +3,45 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
-    font-family: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
-    @apply bg-slate-50 text-slate-900 antialiased selection:bg-brand-orange/20 selection:text-brand-orange;
+    @apply bg-kem text-cara font-sans antialiased;
   }
-
-  * {
-    font-family: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
+  :focus-visible {
+    outline: 3px solid #eb7c16;
+    outline-offset: 2px;
   }
-}
-
-@layer components {
-  .glass-panel {
-    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-premium;
-  }
-  
-  .glass-card {
-    @apply bg-white/60 backdrop-blur-md border border-white/20 shadow-sm hover:shadow-premium transition-all duration-300;
-  }
-
-  .brand-gradient {
-    @apply bg-gradient-to-br from-brand-orange to-brand-accent;
-  }
-
-  .brand-gradient-blue {
-    @apply bg-gradient-to-br from-brand-blue to-brand-blue/80;
+  button {
+    @apply cursor-pointer;
   }
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
+.field {
+  @apply w-full h-11 rounded-xl border border-kem-deep bg-white px-3.5 text-base text-cara placeholder:text-nau-soft/70 focus:border-cam focus:outline-none focus:ring-2 focus:ring-cam/25;
+}
+.btn {
+  @apply inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-sm font-semibold transition-colors;
+}
+.btn-primary {
+  @apply btn bg-cara text-kem hover:bg-[#573419];
+}
+.btn-ghost {
+  @apply btn bg-white text-cara border border-kem-deep hover:border-nau-soft;
+}
+.btn-cam {
+  @apply btn bg-cam text-white hover:bg-cam-dark;
+}

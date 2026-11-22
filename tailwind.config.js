@@ -1,29 +1,27 @@
-/** @type {import('tailwindcss').Config} */
+/** Bảng màu lấy theo bộ nhận diện GMA (Học viện Trí tuệ Thiên tài) */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        brand: {
-          orange: '#eb7c16',
-          blue: '#0a2540',
-          light: '#f8fafc',
-          accent: '#ff9d42',
-        }
+        cam: { DEFAULT: '#eb7c16', dark: '#b85a07', soft: '#fdebd3' },
+        nau: { DEFAULT: '#8b5a36', soft: '#b08968' },
+        cara: '#6b4226',
+        kem: { DEFAULT: '#f9f4ec', deep: '#f1e7d8' },
+        pas: '#fbc278',
+        ok: '#12a150',
+        bad: '#e5243b',
+      },
+      fontFamily: {
+        heading: ['Montserrat', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'premium': '0 10px 30px -10px rgba(0, 71, 171, 0.1), 0 4px 6px -2px rgba(0, 71, 171, 0.05)',
-        'glow': '0 0 20px rgba(235, 124, 22, 0.2)',
+        card: '0 1px 2px rgba(107,66,38,.06), 0 4px 16px rgba(107,66,38,.06)',
+        pop: '0 12px 40px rgba(107,66,38,.22)',
       },
-      borderRadius: {
-        '3xl': '1.5rem',
-        '4xl': '2rem',
-      }
+      borderRadius: { xl2: '1.25rem' },
     },
   },
   plugins: [],
-}
-
+};

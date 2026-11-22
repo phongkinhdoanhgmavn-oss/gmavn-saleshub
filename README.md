@@ -1,16 +1,24 @@
-# React + Vite
+# GMA Sales Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Kho công cụ cho đội Sales GMA Việt Nam. Dùng trên điện thoại và máy tính.
 
-Currently, two official plugins are available:
+## Công cụ
+- **Báo giá & trả góp**: chọn gói, ưu đãi mua chung (2 tài khoản -5%, 3 tài khoản -10%), tạo bill kèm mã QR chuyển khoản (VietQR) để lưu ảnh gửi phụ huynh.
+- **Tin soạn sẵn**: điền thông tin, copy tin gửi nhóm Kinh Doanh x Kế toán, Kinh Doanh x Trainer.
+- **KPI và thu nhập**: nhập doanh thu thực thu, xem hoa hồng, thưởng, mốc kế tiếp.
+- **Kho**: sản phẩm, xử lý từ chối, quy trình, chính sách.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Chạy thử
+```
+npm install
+npm run dev
+```
 
-## React Compiler
+## Chỉnh nội dung
+- Thông tin liên hệ, tài khoản nhận tiền, ưu đãi đang chạy: `src/config.js`
+- Gói, giá, quà tặng, chính sách mua chung: `src/lib/pricing.js`
+- Mẫu tin soạn sẵn và người được tag: `src/data/messageTemplates.js`
+- Công thức KPI: `src/lib/kpi.js`
+- Nội dung Kho: `src/data/knowledge.json`, `src/data/objections.json`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Công nghệ: Vite, React, Tailwind CSS.
