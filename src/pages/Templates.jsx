@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Receipt, CalendarClock, Copy, RotateCcw, Check, AlertCircle, Wand2, Plus } from 'lucide-react';
 import { fmtNum, maskDate, isValidDate, todayVN } from '../lib/format';
 import { PageHeader, Card, useCopy, useToast, useTyping } from '../lib/ui';
@@ -98,7 +99,9 @@ export default function Templates() {
   const copy = useCopy();
   const toast = useToast();
   const typing = useTyping();
-  const [tplId, setTplId] = useState(draft.tpl);
+  // /tin-soan?tpl=ketoan hoặc trainer: mở thẳng mẫu cần dùng (ví dụ từ mục Bàn giao trong Kho)
+  const [params] = useSearchParams();
+  const [tplId, setTplId] = useState(MESSAGE_TEMPLATES.some((t) => t.id === params.get('tpl')) ? params.get('tpl') : draft.tpl);
   const [form, setForm] = useState(draft.form);
   const [tagMap, setTagMap] = useState(draft.tagMap);
   useEffect(() => { draft = { form, tagMap, tpl: tplId }; }, [form, tagMap, tplId]);

@@ -14,7 +14,7 @@ const TOOLS = [
   { to: '/bao-gia', icon: Calculator, title: 'Báo giá & trả góp', sub: 'Tính nhanh, tạo mã QR gửi phụ huynh', accent: true },
   { to: '/tin-soan', icon: MessageSquareText, title: 'Tin soạn sẵn', sub: 'Gửi nhóm Kế toán, Trainer: điền là có tin' },
   { to: '/kpi', icon: Target, title: 'KPI và thu nhập', sub: 'Nhập doanh thu, xem hoa hồng và cần chốt thêm gì' },
-  { to: '/kho', icon: BookOpen, title: 'Kho kiến thức', sub: 'Sản phẩm, xử lý từ chối, chính sách' },
+  { to: '/kho', icon: BookOpen, title: 'Kho kiến thức', sub: 'Sản phẩm, bán hàng, bàn giao, quy tắc' },
 ];
 
 export default function Home() {

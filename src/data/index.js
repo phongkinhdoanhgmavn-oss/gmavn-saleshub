@@ -1,8 +1,10 @@
 import rawObjections from './objections.json';
 import rawKnowledge from './knowledge.json';
 import {
-  Box, Users, GitMerge, MessageSquare, CreditCard, FolderOpen, Headset, GraduationCap, ShieldQuestion,
+  Box, Users, MessageSquare, CreditCard, Headset, GraduationCap, ShieldQuestion,
+  Map, Route, Gauge, ListOrdered, Repeat, PackageCheck, ShieldAlert, Link2,
 } from 'lucide-react';
+import { ARTIFACT_SECTIONS } from './artifactKnowledge';
 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
@@ -17,30 +19,43 @@ export const OBJ_CATS = [...new Set(OBJECTIONS.map((o) => o.cat))].map((cat) => 
 }));
 
 // verify: nội dung cần anh xác nhận (số liệu, chứng nhận, cam kết)
-const META = {
-  1: { icon: Box, tone: 'bg-cam-soft text-cam-dark' },
-  2: { icon: Users, tone: 'bg-kem-deep text-cara' },
-  3: { icon: GitMerge, tone: 'bg-kem-deep text-cara' },
-  4: { icon: MessageSquare, tone: 'bg-kem-deep text-cara' },
-  6: { icon: CreditCard, verify: 'Chính sách hoàn tiền, ưu đãi và hình thức trả góp cần đối chiếu lại với quy định hiện hành.', tone: 'bg-cam-soft text-cam-dark' },
-  7: { icon: FolderOpen, verify: 'Link video và số liệu khảo sát chưa được xác minh nguồn.', tone: 'bg-cam-soft text-cam-dark' },
-  8: { icon: Headset, tone: 'bg-kem-deep text-cara' },
-  9: { icon: GraduationCap, verify: 'Cần xác nhận các chứng nhận (FDA, CE) và cách nêu hiệu quả trước khi dùng với khách.', tone: 'bg-cam-soft text-cam-dark' },
+const OLD = {
+  1: { group: 'sp', icon: Box, tone: 'bg-cam-soft text-cam-dark' },
+  2: { group: 'ban', icon: Users, tone: 'bg-kem-deep text-cara' },
+  4: { group: 'ban', icon: MessageSquare, tone: 'bg-kem-deep text-cara' },
+  6: { group: 'sp', icon: CreditCard, verify: 'Chính sách hoàn tiền, hình thức trả góp cần đối chiếu lại với quy định hiện hành. Mua chung đã đúng theo văn bản mới.', tone: 'bg-cam-soft text-cam-dark' },
+  8: { group: 'sau', icon: Headset, verify: 'Quy trình sau bán và email CSKH cần đối chiếu với mục "Bàn giao sau khi thanh toán" (bản mới nhất).', tone: 'bg-kem-deep text-cara' },
+  9: { group: 'luat', icon: GraduationCap, verify: 'Cần xác nhận các chứng nhận (FDA, CE) và cách nêu hiệu quả trước khi dùng với khách. Nhớ quy tắc "không hứa quá".', tone: 'bg-cam-soft text-cam-dark' },
 };
 
-const BASE = rawKnowledge
-  .filter((s) => s.id !== 5) // Xử lý từ chối hiển thị bằng giao diện riêng ngay trong Kho
-  .map((s) => ({ ...s, ...META[s.id] }));
+const ICONS = { Map, Route, Gauge, ListOrdered, Repeat, PackageCheck, ShieldAlert, Link2 };
+
+// Nội dung cũ còn dùng: Sản phẩm, Chân dung KH, Kịch bản, Chính sách, CSKH, Kiến thức chuyên môn.
+// "Quy trình Sale" và "Media & Case Study" cũ đã thay bằng nội dung từ tài liệu đào tạo.
+const old = Object.fromEntries(
+  rawKnowledge.filter((s) => OLD[s.id]).map((s) => [s.id, { ...s, ...OLD[s.id], source: 'cu' }]),
+);
+const art = Object.fromEntries(
+  ARTIFACT_SECTIONS.map((s) => [s.id, { ...s, icon: ICONS[s.icon], tone: 'bg-cam-soft text-cam-dark', source: 'tai-lieu' }]),
+);
 
 const OBJECTION_SECTION = {
   id: 'tu-choi',
+  group: 'ban',
   title: 'Xử lý từ chối',
   shortDesc: '57 tình huống, bấm là có câu đáp',
   icon: ShieldQuestion,
   tone: 'bg-cam-soft text-cam-dark',
   special: true,
+  verify: 'Một số câu đáp có cam kết (hoàn tiền 100%, FDA, "an toàn 100%", số liệu khảo sát) có thể trái quy tắc "không hứa quá". Cần rà lại trước khi dùng với phụ huynh.',
   details: [],
 };
 
-// Xử lý từ chối đứng ngay sau Sản phẩm & Giải pháp
-export const LIBRARY = [BASE[0], OBJECTION_SECTION, ...BASE.slice(1)];
+// Thứ tự hiển thị trong Kho, theo từng nhóm
+export const LIBRARY = [
+  old[1], old[6], art['lo-trinh'],
+  art['hanh-trinh'], art['nhom-g'], art['tu-van-5'], art['nhip-313'], OBJECTION_SECTION, old[4], old[2],
+  art['ban-giao'], old[8],
+  art['vung-an-toan'], old[9],
+  art['lien-ket'],
+];
