@@ -2,9 +2,17 @@ import rawObjections from './objections.json';
 import rawKnowledge from './knowledge.json';
 import {
   Box, Users, MessageSquare, CreditCard, Headset, GraduationCap, ShieldQuestion,
-  Map, Route, Gauge, ListOrdered, Repeat, PackageCheck, ShieldAlert, Link2,
+  Brain, Map, Route, Gauge, ListOrdered, Repeat, PackageCheck, ShieldAlert, Link2,
 } from 'lucide-react';
 import { ARTIFACT_SECTIONS } from './artifactKnowledge';
+import { pipelineSearchDetails } from './pipelineScripts';
+import { compareText, sensesText, formulaText } from './methodContent';
+
+const methodSearchDetails = () => [
+  { heading: 'So sánh giáo dục truyền thống và giáo dục não bộ GMA', content: compareText() },
+  { heading: 'Phương pháp Memohack học mà chơi, 6 giác quan', content: sensesText() },
+  { heading: 'Công thức chuyển hóa năng lực học tập', content: formulaText() },
+];
 
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
@@ -23,7 +31,7 @@ const OLD = {
   1: { group: 'sp', icon: Box, tone: 'bg-cam-soft text-cam-dark' },
   2: { group: 'ban', icon: Users, tone: 'bg-kem-deep text-cara' },
   4: { group: 'ban', icon: MessageSquare, tone: 'bg-kem-deep text-cara' },
-  6: { group: 'sp', icon: CreditCard, verify: 'Chính sách hoàn tiền, hình thức trả góp cần đối chiếu lại với quy định hiện hành. Mua chung đã đúng theo văn bản mới.', tone: 'bg-cam-soft text-cam-dark' },
+  6: { group: 'sp', icon: CreditCard, tone: 'bg-cam-soft text-cam-dark' },
   8: { group: 'sau', icon: Headset, verify: 'Quy trình sau bán và email CSKH cần đối chiếu với mục "Bàn giao sau khi thanh toán" (bản mới nhất).', tone: 'bg-kem-deep text-cara' },
   9: { group: 'luat', icon: GraduationCap, verify: 'Cần xác nhận các chứng nhận (FDA, CE) và cách nêu hiệu quả trước khi dùng với khách. Nhớ quy tắc "không hứa quá".', tone: 'bg-cam-soft text-cam-dark' },
 };
@@ -51,10 +59,32 @@ const OBJECTION_SECTION = {
   details: [],
 };
 
+const METHOD_SECTION = {
+  id: 'phuong-phap',
+  group: 'sp',
+  title: 'Phương pháp & điểm khác biệt',
+  shortDesc: 'So sánh với giáo dục truyền thống, 6 giác quan, công thức chuyển hóa',
+  icon: Brain,
+  tone: 'bg-cam-soft text-cam-dark',
+  kind: 'method',
+  details: methodSearchDetails(),
+};
+
+const SCRIPT_SECTION = {
+  id: 'kich-ban',
+  group: 'kb',
+  title: 'Kịch bản theo Pipeline',
+  shortDesc: 'Câu hỏi và cách trả lời theo 6 bước và 3 khóa, điền tên là ra kịch bản',
+  icon: MessageSquare,
+  tone: 'bg-kb-soft text-kb-dark',
+  kind: 'pipeline',
+  details: pipelineSearchDetails(),
+};
+
 // Thứ tự hiển thị trong Kho, theo từng nhóm
 export const LIBRARY = [
-  old[1], old[6], art['lo-trinh'],
-  art['hanh-trinh'], art['nhom-g'], art['tu-van-5'], art['nhip-313'], OBJECTION_SECTION, old[4], old[2],
+  METHOD_SECTION, old[1], old[6], art['lo-trinh'],
+  art['hanh-trinh'], SCRIPT_SECTION, art['nhom-g'], art['tu-van-5'], art['nhip-313'], OBJECTION_SECTION, old[2],
   art['ban-giao'], old[8],
   art['vung-an-toan'], old[9],
   art['lien-ket'],

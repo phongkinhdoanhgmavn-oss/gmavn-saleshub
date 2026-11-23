@@ -9,6 +9,8 @@ export default {
         cara: '#6b4226',
         kem: { DEFAULT: '#f9f4ec', deep: '#f1e7d8' },
         pas: '#fbc278',
+        // Màu riêng cho khu Kịch bản Pipeline
+        kb: { DEFAULT: '#0e7c86', dark: '#0a5a62', deep: '#0b4a52', soft: '#d9f0f2' },
         ok: '#12a150',
         bad: '#e5243b',
       },

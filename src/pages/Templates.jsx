@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Receipt, CalendarClock, CalendarCheck, Copy, RotateCcw, Check, AlertCircle, Wand2, Plus, User, Minus } from 'lucide-react';
+import { Receipt, CalendarClock, CalendarCheck, Copy, RotateCcw, Check, AlertCircle, Wand2, Plus, Minus } from 'lucide-react';
 import { fmtNum, maskDate, isValidDate, todayVN, weekdayOf } from '../lib/format';
 import { useSalesInfo } from '../lib/sales';
+import SalesPicker from '../components/SalesPicker';
 import { PageHeader, Card, useCopy, useToast, useTyping } from '../lib/ui';
 import { COURSE_OPTIONS, TAG_PEOPLE, MESSAGE_TEMPLATES, TRIAL_BRANCHES, buildMessage, missingFields, buildTrialMessage, missingTrial, trialTimes } from '../data/messageTemplates';
 
@@ -249,8 +250,7 @@ let trialDraft = { role: '', parent: '', qty: '1', kid: '', date: '', time: '', 
 function TrialTemplate() {
   const copy = useCopy();
   const typing = useTyping();
-  const { info, setInfo, label, phone } = useSalesInfo();
-  const [editing, setEditing] = useState(false);
+  const { info, label, phone } = useSalesInfo();
   const [f, setF] = useState(trialDraft);
   useEffect(() => { trialDraft = f; }, [f]);
   const set = (k) => (v) => setF((p) => ({ ...p, [k]: v }));
@@ -271,31 +271,7 @@ function TrialTemplate() {
           <p><b>Nhắn riêng cho Phụ huynh:</b> gửi qua Zalo sau khi phụ huynh đăng ký lớp trải nghiệm. Địa điểm và link bản đồ tự điền theo cơ sở.</p>
         </div>
 
-        {/* Người gửi: nhập một lần, máy nhớ */}
-        {label && phone && !editing ? (
-          <Card className="px-4 py-3 flex items-center gap-3">
-            <span className="h-10 w-10 rounded-full bg-cam-soft text-cam-dark grid place-items-center shrink-0"><User className="w-5 h-5" /></span>
-            <span className="flex-1 min-w-0">
-              <span className="block text-xs text-nau">Người gửi (nhớ trên máy này)</span>
-              <span className="block font-semibold truncate">{label} · {phone}</span>
-            </span>
-            <button onClick={() => setEditing(true)} className="h-11 px-3 text-sm font-semibold text-cam-dark">Sửa</button>
-          </Card>
-        ) : (
-          <Card className="p-4">
-            <p className="text-sm font-semibold">Người gửi <span className="font-normal text-nau">(điền một lần, lần sau tự có)</span></p>
-            <div className="mt-2 grid grid-cols-[auto_1fr] gap-2 md:grid-cols-[auto_1fr_1fr]">
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-kem-deep" role="group" aria-label="Xưng hô">
-                {['Cô', 'Thầy'].map((t) => (
-                  <button key={t} onClick={() => setInfo((p) => ({ ...p, title: t }))} aria-pressed={info.title === t} className={`h-10 px-4 rounded-lg text-sm font-semibold ${info.title === t ? 'bg-white shadow-card' : 'text-nau'}`}>{t}</button>
-                ))}
-              </div>
-              <input className="field" placeholder="Tên của bạn, ví dụ Lan" autoComplete="given-name" value={info.name} onChange={(e) => { const v = e.target.value; setInfo((p) => ({ ...p, name: v })); }} aria-label="Tên Sales" />
-              <input className="field col-span-2 md:col-span-1" placeholder="Số điện thoại" inputMode="tel" autoComplete="tel" value={info.phone} onChange={(e) => { const v = e.target.value.replace(/[^0-9+ .]/g, ''); setInfo((p) => ({ ...p, phone: v })); }} aria-label="Số điện thoại Sales" />
-            </div>
-            {label && phone && <button onClick={() => setEditing(false)} className="btn-primary mt-3 w-full">Xong</button>}
-          </Card>
-        )}
+        <SalesPicker caption="Người gửi" />
 
         <Card className="p-4 space-y-4">
           <h2 className="font-heading font-bold text-lg">Thông tin điền vào tin</h2>

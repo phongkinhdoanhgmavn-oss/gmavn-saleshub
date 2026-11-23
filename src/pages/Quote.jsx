@@ -7,6 +7,7 @@ import { POLICY, BANK_ACCOUNTS, COMPANY_ACCOUNT_THRESHOLD } from '../config';
 import { fmtNum } from '../lib/format';
 import PaymentQr from '../components/PaymentQr';
 import { useSalesInfo } from '../lib/sales';
+import SalesPicker from '../components/SalesPicker';
 
 const digits = (s) => parseInt(String(s).replace(/\D/g, ''), 10) || 0;
 // Giá gói chưa có giá chính thức được nhớ trên máy (dùng chung với trang KPI).
@@ -47,7 +48,6 @@ function Switch({ checked, onChange, label }) {
 export default function Quote() {
   const copy = useCopy();
   const typing = useTyping();
-  const [editingSales, setEditingSales] = useState(false);
   const [items, setItems] = useState({ memohack: { qty: 1, addon: false } });
   const [groupOn, setGroupOn] = useState(true);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function Quote() {
   const [installment, setInstallment] = useState(false);
   const [tenureId, setTenureId] = useState(6);
   const [bank, setBank] = useState(BANKS[0]);
-  const { info, setInfo, label: salesLabel, phone: salesPhone } = useSalesInfo();
+  const { label: salesLabel, phone: salesPhone } = useSalesInfo();
 
   const q = useMemo(
     () => calcQuote({ items, groupOn, customPct: parseFloat(customPct) || 0, customVnd: digits(customVnd), installment, tenureId, bank }),
@@ -148,30 +148,7 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
       <div className="xl:grid xl:grid-cols-[1fr_380px] xl:gap-6 xl:items-start">
         <div className="space-y-6 min-w-0">
           {/* Thông tin Sales: hiện trên ảnh mã chuyển khoản và tin báo giá */}
-          {salesLabel && salesPhone && !editingSales ? (
-            <section className="rounded-2xl bg-white border border-kem-deep shadow-card px-4 py-3 flex items-center gap-3">
-              <span className="h-10 w-10 rounded-full bg-cam-soft text-cam-dark grid place-items-center shrink-0"><User className="w-5 h-5" /></span>
-              <span className="flex-1 min-w-0">
-                <span className="block text-xs text-nau">Người tư vấn (hiện trên bill)</span>
-                <span className="block font-semibold truncate">{salesLabel} · {salesPhone}</span>
-              </span>
-              <button onClick={() => setEditingSales(true)} className="h-11 px-3 text-sm font-semibold text-cam-dark">Sửa</button>
-            </section>
-          ) : (
-          <section className="rounded-2xl bg-white border border-kem-deep shadow-card p-4">
-            <p className="text-sm font-semibold">Người tư vấn <span className="font-normal text-nau">(hiện trên bill gửi phụ huynh, nhớ trên máy này)</span></p>
-            <div className="mt-2 grid grid-cols-[auto_1fr] gap-2 md:grid-cols-[auto_1fr_1fr]">
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-kem-deep" role="group" aria-label="Xưng hô">
-                {['Cô', 'Thầy'].map((t) => (
-                  <button key={t} onClick={() => setInfo((p) => ({ ...p, title: t }))} aria-pressed={info.title === t} className={`h-10 px-4 rounded-lg text-sm font-semibold ${info.title === t ? 'bg-white shadow-card' : 'text-nau'}`}>{t}</button>
-                ))}
-              </div>
-              <input className="field" placeholder="Tên của bạn, ví dụ Lan" autoComplete="given-name" value={info.name} onChange={(e) => { const v = e.target.value; setInfo((p) => ({ ...p, name: v })); }} aria-label="Tên Sales" />
-              <input className="field col-span-2 md:col-span-1" placeholder="Số điện thoại" inputMode="tel" autoComplete="tel" value={info.phone} onChange={(e) => { const v = e.target.value.replace(/[^0-9+ .]/g, ''); setInfo((p) => ({ ...p, phone: v })); }} aria-label="Số điện thoại Sales" />
-            </div>
-            {salesLabel && salesPhone && <button onClick={() => setEditingSales(false)} className="btn-primary mt-3 w-full">Xong</button>}
-          </section>
-          )}
+          <SalesPicker caption="Người tư vấn (hiện trên bill gửi phụ huynh)" />
 
           {/* Chọn gói */}
           <section>

@@ -3,6 +3,7 @@
 
 // Nhóm hiển thị trong Kho, theo thứ tự
 export const GROUPS = [
+  { id: 'kb', title: 'Kịch bản Pipeline' },
   { id: 'sp', title: 'Sản phẩm & giá' },
   { id: 'ban', title: 'Bán hàng' },
   { id: 'sau', title: 'Sau khi chốt' },

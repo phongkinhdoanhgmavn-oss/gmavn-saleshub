@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronDown, TriangleAlert, Copy, ExternalLink, Check, RotateCcw, ArrowRight, X, BookOpen, ChevronsUpDown, ChevronsDownUp, Package, Target, PackageCheck, ShieldAlert, Link2 } from 'lucide-react';
+import { ChevronDown, TriangleAlert, Copy, ExternalLink, Check, RotateCcw, ArrowRight, X, BookOpen, ChevronsUpDown, ChevronsDownUp, Package, MessageSquare, Target, PackageCheck, ShieldAlert, Link2 } from 'lucide-react';
 import { LIBRARY } from '../data';
 import { GROUPS, GOLDEN_RULES, HANDOFF_FLOWS, LINKS } from '../data/artifactKnowledge';
 import Objections from './Objections';
+import PipelineScripts from '../components/PipelineScripts';
+import Method from '../components/Method';
 import { PageHeader, useCopy } from '../lib/ui';
 
 // Hiển thị văn bản thô theo dòng: gạch đầu dòng thụt lề, tiêu đề nhóm đậm.
@@ -148,6 +150,7 @@ function LinkList() {
 
 // Màu và biểu tượng của từng nhóm lớn, để nhìn là nhận ra
 const GROUP_UI = {
+  kb: { icon: MessageSquare, head: 'bg-kb text-white', ring: 'border-kb', sel: 'bg-kb text-white', hover: 'hover:bg-kb-soft' },
   sp: { icon: Package, head: 'bg-cam-soft text-cam-dark', ring: 'border-cam/60' },
   ban: { icon: Target, head: 'bg-cara text-kem', ring: 'border-cara' },
   sau: { icon: PackageCheck, head: 'bg-[#dff3e7] text-[#0d7a3d]', ring: 'border-ok/60' },
@@ -208,7 +211,7 @@ export default function Library() {
                   const on = s.id === current.id;
                   return (
                     <button key={s.id} onClick={() => pick(s.id, phone)} aria-current={on ? 'page' : undefined}
-                      className={`w-full text-left rounded-xl px-3 min-h-11 py-2 flex items-center gap-2.5 text-sm font-semibold transition-colors ${on ? 'bg-cam text-white' : 'text-cara hover:bg-kem-deep'}`}>
+                      className={`w-full text-left rounded-xl px-3 min-h-11 py-2 flex items-center gap-2.5 text-sm font-semibold transition-colors ${on ? (ui.sel || 'bg-cam text-white') : `text-cara ${ui.hover || 'hover:bg-kem-deep'}`}`}>
                       <I className="w-[18px] h-[18px] shrink-0" /> <span>{s.title}</span>
                     </button>
                   );
@@ -221,7 +224,7 @@ export default function Library() {
     </div>
   );
   // Nội dung chữ (thu phóng) chỉ hiện khi mục không có giao diện riêng
-  const hasCustomUI = ['gscale', 'handoff', 'rules', 'links'].includes(current.kind) || current.special;
+  const hasCustomUI = ['gscale', 'handoff', 'rules', 'links', 'pipeline', 'method'].includes(current.kind) || current.special;
 
   return (
     <div>
@@ -258,6 +261,8 @@ export default function Library() {
           {current.kind === 'handoff' && <Handoff />}
           {current.kind === 'rules' && <Rules />}
           {current.kind === 'links' && <LinkList />}
+          {current.kind === 'pipeline' && <PipelineScripts />}
+          {current.kind === 'method' && <Method />}
 
           {/* Nội dung chữ: dạng thu phóng. Mục có giao diện riêng chỉ hiện phần "Nhớ nhé" bổ sung */}
           {!current.special && (
