@@ -18,13 +18,38 @@ export const GOLDEN_RULES = [
   'Không nói sai khoa học.',
 ];
 
-// Bàn giao sau khi khách thanh toán. link: trang trong app hỗ trợ bước đó.
-export const HANDOFF_STEPS = [
-  { title: 'Tạo bill và mã QR', desc: 'Tạo bill và mã QR trên Sales Hub: tên khóa, số tiền, nội dung chuyển khoản, ưu đãi nếu có. Gửi mã QR cho phụ huynh.', link: '/bao-gia', linkLabel: 'Mở Báo giá' },
-  { title: 'Kinh doanh x Kế toán', desc: 'Gửi bill, tag Kế toán và chị Hoàn xác nhận tiền về.', link: '/tin-soan?tpl=ketoan', linkLabel: 'Soạn tin cho Kế toán' },
-  { title: 'Sales x Trainer', desc: 'Gửi thông tin học viên. Phòng Đào tạo phân công các cô care.', link: '/tin-soan?tpl=trainer', linkLabel: 'Soạn tin cho Trainer' },
-  { title: 'GMA SALEs nội bộ', desc: 'Tag Đại ca để kích hoạt tài khoản.' },
-  { title: 'Nhóm mới với phụ huynh', desc: 'Sales tạo nhóm với phụ huynh và các cô, giới thiệu. Từ bước này, các cô care bé về sau.' },
+// Bàn giao sau khi khách thanh toán, 2 luồng. link: trang trong app; href: trang bên ngoài.
+const HANDOFF_COMMON = [
+  { title: 'Tạo bill và mã QR', desc: 'Tạo bill và mã QR trên Sales Hub: tên khóa, số tiền, nội dung chuyển khoản, ưu đãi nếu có. Gửi mã QR cho phụ huynh.', actions: [{ to: '/bao-gia', label: 'Mở Báo giá' }] },
+  { title: 'Kinh doanh x Kế toán', desc: 'Gửi bill, tag Kế toán và chị Hoàn xác nhận tiền về.', actions: [{ to: '/tin-soan?tpl=ketoan', label: 'Soạn tin cho Kế toán' }] },
+  { title: 'Sales x Trainer', desc: 'Gửi thông tin học viên. Phòng Đào tạo phân công các cô care.', actions: [{ to: '/tin-soan?tpl=trainer', label: 'Soạn tin cho Trainer' }] },
+];
+const HANDOFF_LAST = { title: 'Nhóm mới với phụ huynh', desc: 'Sales tạo nhóm với phụ huynh và các cô, giới thiệu. Từ bước này, các cô care bé về sau.' };
+
+export const HANDOFF_FLOWS = [
+  {
+    id: 'full', label: 'Memohack 12 tháng & Hyperhack',
+    steps: [
+      ...HANDOFF_COMMON,
+      {
+        title: 'GMA SALEs nội bộ',
+        desc: 'Kích hoạt tài khoản MemoSchool: tạo hóa đơn trên Sales Hub, điền thông tin khách rồi tải ảnh xuống. Mở trang kích hoạt, điền thông tin học viên và tải hóa đơn lên. Sau đó tag Đại ca.',
+        actions: [
+          { to: '/hoa-don', label: 'Tạo hóa đơn' },
+          { href: 'https://memoschool.com/memoschool-vietnam/', label: 'Mở trang kích hoạt tài khoản' },
+        ],
+      },
+      HANDOFF_LAST,
+    ],
+  },
+  {
+    id: 'one', label: 'Memohack 1:1 trực tuyến',
+    steps: [
+      ...HANDOFF_COMMON,
+      { title: 'GMA SALEs nội bộ', desc: 'Không cần kích hoạt tài khoản. Tag Đại ca để gửi mail thông báo khóa học.' },
+      HANDOFF_LAST,
+    ],
+  },
 ];
 
 export const LINKS = [
@@ -117,7 +142,7 @@ export const ARTIFACT_SECTIONS = [
     details: [
       {
         heading: 'Các bước bàn giao',
-        content: HANDOFF_STEPS.map((s, i) => `${i + 1}. ${s.title}: ${s.desc}`).join('\n'),
+        content: HANDOFF_FLOWS.map((f) => `${f.label}\n` + f.steps.map((s, i) => `${i + 1}. ${s.title}: ${s.desc}`).join('\n')).join('\n\n'),
       },
     ],
   },

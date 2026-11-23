@@ -18,6 +18,7 @@ export const BANK_ACCOUNTS = {
     number: '226661368',
     holder: 'CTCP GIAO DUC GMA VIET NAM',
     bankName: 'MB Bank',
+    shortName: 'MB Bank',
   },
   personal: {
     label: 'Tài khoản cá nhân',
@@ -25,7 +26,24 @@ export const BANK_ACCOUNTS = {
     number: '103884261840',
     holder: 'TRƯƠNG THỊ THU HOÀN',
     bankName: 'VietinBank CN Đô Thành - PGD Hoàng Văn Thụ',
+    shortName: 'VietinBank',
   },
+};
+// Thông tin in ở chân hóa đơn kích hoạt tài khoản MemoSchool.
+export const INVOICE = {
+  email: 'phongkinhdoanh.gmavn@gmail.com',
+  address: 'NO24 - LK829 Khu đất dịch vụ Bờ Hội, La Khê, Hà Đông, Hà Nội, Việt Nam',
+  phone: '+84 981 586 907',
+  siteText: 'GMAVIETNAM.COM',
+  siteUrl: 'https://gmavietnam.com/',
+  firstNo: 65, // số hóa đơn đầu tiên của Sales Hub (mẫu gần nhất là #64)
+  taxPct: 0,
+  account: 'personal', // luôn in tài khoản cá nhân
+  // Giá cố định in trên hóa đơn, không sửa tay
+  products: [
+    { id: 'memohack', label: 'Memohack 12 tháng', name: 'Sản phẩm Memohack', price: 37500000 },
+    { id: 'hyperhack', label: 'Hyperhack', name: 'Sản phẩm Hyperhack', price: 13000000 },
+  ],
 };
 // Quy tắc cũ: đơn từ mức này trở lên thì chuyển vào tài khoản công ty.
 export const COMPANY_ACCOUNT_THRESHOLD = 37000000;

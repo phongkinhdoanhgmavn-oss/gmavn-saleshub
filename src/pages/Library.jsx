@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown, TriangleAlert, Copy, ExternalLink, Check, RotateCcw, ArrowRight, X, BookOpen } from 'lucide-react';
 import { LIBRARY } from '../data';
-import { GROUPS, GOLDEN_RULES, HANDOFF_STEPS, LINKS } from '../data/artifactKnowledge';
+import { GROUPS, GOLDEN_RULES, HANDOFF_FLOWS, LINKS } from '../data/artifactKnowledge';
 import Objections from './Objections';
 import { PageHeader, useCopy } from '../lib/ui';
 
@@ -51,10 +51,18 @@ function GScale({ section }) {
 }
 
 function Handoff() {
+  const [flowId, setFlowId] = useState('full');
   const [done, setDone] = useState([]);
+  const HANDOFF_STEPS = HANDOFF_FLOWS.find((f) => f.id === flowId).steps;
   const toggle = (i) => setDone((d) => (d.includes(i) ? d.filter((x) => x !== i) : [...d, i]));
   return (
     <div>
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-kem-deep mb-3" role="group" aria-label="Chọn khóa học">
+        {HANDOFF_FLOWS.map((f) => (
+          <button key={f.id} onClick={() => { setFlowId(f.id); setDone([]); }} aria-pressed={flowId === f.id}
+            className={`min-h-11 px-2 rounded-lg text-sm font-semibold leading-tight ${flowId === f.id ? 'bg-white shadow-card' : 'text-nau'}`}>{f.label}</button>
+        ))}
+      </div>
       <div className="flex items-center justify-between gap-3 mb-3">
         <p className="text-sm text-nau">Tích từng bước khi làm xong. Bước nào có sẵn công cụ thì bấm nút bên dưới.</p>
         {done.length > 0 && (
@@ -76,10 +84,17 @@ function Handoff() {
                 <div className="min-w-0 flex-1">
                   <p className={`font-heading font-bold leading-snug ${on ? 'text-nau line-through' : ''}`}>{s.title}</p>
                   <p className="text-[15px] mt-0.5 leading-relaxed">{s.desc}</p>
-                  {s.link && (
-                    <Link to={s.link} className="mt-2.5 inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl bg-cam-soft text-cam-dark text-sm font-bold">
-                      {s.linkLabel} <ArrowRight className="w-4 h-4" />
-                    </Link>
+                  {s.actions && (
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                      {s.actions.map((a) => {
+                        const cls = 'inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl bg-cam-soft text-cam-dark text-sm font-bold';
+                        return a.to ? (
+                          <Link key={a.label} to={a.to} className={cls}>{a.label} <ArrowRight className="w-4 h-4" /></Link>
+                        ) : (
+                          <a key={a.label} href={a.href} target="_blank" rel="noopener noreferrer" className={cls}>{a.label} <ExternalLink className="w-4 h-4" /></a>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, Copy, Minus, Plus, AlertTriangle, Send, Table2, Info, QrCode, Building2, User, Gift, ChevronDown, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { FileText, ArrowRight, Check, Copy, Minus, Plus, AlertTriangle, Send, Table2, Info, QrCode, Building2, User, Gift, ChevronDown, Users } from 'lucide-react';
 import { PageHeader, Chip, useCopy, useTyping } from '../lib/ui';
 import { PACKAGES, TENURES, BANKS, GROUP_RULES, calcQuote, giftValue, groupRateFor, fmt, fmtShort, fmtTr } from '../lib/pricing';
 import { POLICY, BANK_ACCOUNTS, COMPANY_ACCOUNT_THRESHOLD } from '../config';
@@ -66,7 +67,7 @@ export default function Quote() {
   const selected = Object.keys(items);
   const needApproval = q.customAmt > 0; // chỉ phần giảm thêm ngoài chính sách mới cần Đại ca duyệt
   const missingPrice = selected.some((id) => !(items[id].price ?? PACKAGES.find((p) => p.id === id).price));
-  const nextTier = GROUP_RULES.find((r) => q.qtyTotal < r.accounts);
+  const nextTier = GROUP_RULES.find((r) => q.groupQty < r.accounts);
 
   // Tài khoản nhận tiền: quy tắc cũ, đơn lớn vào công ty, đơn nhỏ vào cá nhân. Sales có thể đổi tay.
   const [acctPick, setAcctPick] = useState(null);
@@ -113,7 +114,7 @@ export default function Quote() {
       '',
       `• Chương trình: ${lines.join(' + ') || '—'}`,
       q.discount > 0 ? `• Giá niêm yết: ${fmt(q.gross)}` : null,
-      q.groupAmt > 0 ? `• Ưu đãi mua chung ${q.qtyTotal} tài khoản (giảm ${Math.round(q.groupRate * 100)}%): -${fmt(q.groupAmt)}` : null,
+      q.groupAmt > 0 ? `• Ưu đãi mua chung ${q.groupQty} tài khoản (giảm ${Math.round(q.groupRate * 100)}%): -${fmt(q.groupAmt)}` : null,
       q.customAmt > 0 ? `• Ưu đãi thêm: -${fmt(q.customAmt)}` : null,
       `• Học phí: ${fmt(q.final)}`,
       `• Tương đương khoảng ${fmt(q.perDay)}/ngày`,
@@ -137,8 +138,8 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
   const canCopy = selected.length > 0 && !missingPrice;
   // Lưu báo giá gần nhất để trang Tin soạn sẵn điền sẵn khóa học và học phí
   useEffect(() => {
-    try { localStorage.setItem('last_quote', JSON.stringify({ ids: selected, final: Math.round(q.final), total: payAmount })); } catch { /* bỏ qua */ }
-  }, [selected.join(','), q.final, payAmount]); // eslint-disable-line react-hooks/exhaustive-deps
+    try { localStorage.setItem('last_quote', JSON.stringify({ ids: selected, final: Math.round(q.final), total: payAmount, qty: q.qtyTotal, acct: acctKey })); } catch { /* bỏ qua */ }
+  }, [selected.join(','), q.final, payAmount, q.qtyTotal, acctKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
@@ -303,24 +304,28 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                 <div className="flex-1 min-w-0">
                   <p className="font-heading font-bold leading-snug">
                     {q.groupRate > 0 && groupOn
-                      ? `Đang áp dụng: ${q.qtyTotal} tài khoản, giảm ${Math.round(q.groupRate * 100)}% (-${fmt(q.groupAmt)})`
+                      ? `Đang áp dụng: ${q.groupQty} tài khoản Memohack 12 tháng, giảm ${Math.round(q.groupRate * 100)}% (-${fmt(q.groupAmt)})`
                       : q.groupRate > 0
                         ? `Đủ điều kiện giảm ${Math.round(q.groupRate * 100)}% nhưng đang tắt`
-                        : `Đang chọn ${q.qtyTotal} tài khoản`}
+                        : q.groupQty > 0 ? `Đang chọn ${q.groupQty} tài khoản Memohack 12 tháng` : 'Chưa chọn Memohack 12 tháng'}
                   </p>
                   <p className="text-sm text-nau mt-0.5">
                     {nextTier
-                      ? `Thêm ${nextTier.accounts - q.qtyTotal} tài khoản nữa để được giảm ${Math.round(nextTier.rate * 100)}% trên tổng tiền.`
+                      ? `Thêm ${nextTier.accounts - q.groupQty} tài khoản Memohack 12 tháng nữa để được giảm ${Math.round(nextTier.rate * 100)}% trên tổng tiền.`
                       : 'Đã ở mức giảm cao nhất của chính sách mua chung.'}
                   </p>
-                  {q.qtyTotal > 3 && <p className="text-xs text-nau mt-1">Chính sách ghi rõ mức 2 và 3 tài khoản. Từ 4 tài khoản đang tính mức 10%, hỏi Đại ca nếu cần xác nhận.</p>}
+                  {q.groupQty > 3 && <p className="text-xs text-nau mt-1">Chính sách ghi rõ mức 2 và 3 tài khoản. Từ 4 tài khoản đang tính mức 10%, hỏi Đại ca nếu cần xác nhận.</p>}
                 </div>
                 <Switch checked={groupOn} onChange={setGroupOn} label="Áp dụng ưu đãi mua chung" />
               </div>
 
+              <p className="mt-3 rounded-xl bg-kem px-3.5 py-2.5 text-sm font-semibold text-cara">
+                Ưu đãi mua chung chỉ áp dụng cho khóa Memohack 12 tháng. Gói 1:1 và Hyperhack không tính.
+              </p>
+
               <div className="grid grid-cols-2 gap-2 mt-3">
                 {GROUP_RULES.map((r) => {
-                  const active = groupOn && groupRateFor(q.qtyTotal) === r.rate && q.qtyTotal >= r.accounts;
+                  const active = groupOn && groupRateFor(q.groupQty) === r.rate && q.groupQty >= r.accounts;
                   return (
                     <div key={r.accounts} className={`rounded-xl border px-3 py-2.5 text-sm ${active ? 'border-cam bg-cam-soft font-bold text-cam-dark' : 'border-kem-deep text-nau'}`}>
                       {r.accounts} tài khoản <span className="font-heading font-extrabold">-{Math.round(r.rate * 100)}%</span>
@@ -363,6 +368,16 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                   <input className="field mt-1" inputMode="numeric" placeholder="0" value={customVnd} onChange={(e) => setCustomVnd(digits(e.target.value) ? fmtNum(digits(e.target.value)) : '')} />
                 </label>
               </div>
+              {items.memohack_3t_1v1 && (
+                <p className="mt-3 rounded-xl bg-kem px-3.5 py-2.5 text-sm font-semibold text-cara">
+                  Memohack 1:1: giảm tối đa {fmt(PACKAGES.find((p) => p.id === 'memohack_3t_1v1').maxDiscount)} mỗi tài khoản, không áp dụng mua chung.
+                </p>
+              )}
+              {q.customCapped && (
+                <p className="mt-3 rounded-xl border border-bad/40 bg-[#fdecee] px-3.5 py-2.5 text-sm font-bold text-bad">
+                  Mức nhập {fmt(q.customRaw)} vượt trần của gói 1:1. Báo giá chỉ tính giảm thêm {fmt(q.customAmt)}.
+                </p>
+              )}
               {needApproval && (
                 <div className="mt-3 rounded-xl border border-bad/40 bg-[#fdecee] p-3.5 flex gap-3">
                   <AlertTriangle className="w-5 h-5 text-bad shrink-0 mt-0.5" />
@@ -420,7 +435,7 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                   </div>
                   {q.groupAmt > 0 && (
                     <div className="flex items-baseline justify-between gap-3">
-                      <dt className="text-kem/85">Mua chung <span className="text-kem/65">({q.qtyTotal} tài khoản, -{Math.round(q.groupRate * 100)}%)</span></dt>
+                      <dt className="text-kem/85">Mua chung <span className="text-kem/65">({q.groupQty} tài khoản, -{Math.round(q.groupRate * 100)}%)</span></dt>
                       <dd className="font-heading font-extrabold text-lg text-pas">-{fmt(q.groupAmt)}</dd>
                     </div>
                   )}
@@ -512,6 +527,16 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
               <p className="text-sm text-nau mt-3">Chọn gói và nhập học phí để hiện mã QR.</p>
             )}
           </div>
+          {(items.memohack || items.hyperhack) && (
+            <div className="rounded-2xl bg-white border border-kem-deep shadow-card p-4 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <FileText className="w-5 h-5 text-cam" />
+                <h3 className="font-heading font-bold">Hóa đơn kích hoạt tài khoản</h3>
+              </div>
+              <p className="text-sm text-nau">Sau khi khách thanh toán, tạo hóa đơn MemoSchool, tải ảnh xuống rồi tải lên trang kích hoạt. Đơn giá và tài khoản nhận tiền được điền sẵn từ báo giá này.</p>
+              <Link to="/hoa-don" className="btn-cam w-full h-12 mt-3">Tạo hóa đơn <ArrowRight className="w-4 h-4" /></Link>
+            </div>
+          )}
         </aside>
       </div>
 

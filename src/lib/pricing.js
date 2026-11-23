@@ -3,7 +3,7 @@ import { fmtNum } from './format';
 export const PACKAGES = [
   {
     id: 'memohack', name: 'Memohack 12 tháng', short: '12T', price: 42500000, days: 365, sessions: 144,
-    desc: '144 buổi · 96 Online + 48 Offline', addon: 5500000, tone: '#eb7c16',
+    desc: '144 buổi · 96 Online + 48 Offline', addon: 5500000, tone: '#eb7c16', groupEligible: true,
     includes: [
       '4 lần đo sóng não',
       'Coaching 1:1 chuyên sâu, không giới hạn',
@@ -20,7 +20,7 @@ export const PACKAGES = [
   {
     // Gói 1:1: 12,5tr, 24 buổi online x 45 phút. Mua kèm suất Offline bổ sung 2,2tr (tặng 1 bịt mắt hoặc 1 áo tùy chọn).
     id: 'memohack_3t_1v1', name: 'Memohack 3 tháng 1:1 trực tuyến', short: '3T 1:1', price: 12500000, days: 90, sessions: 24,
-    desc: '24 buổi online 1:1 với giáo viên × 45 phút', addon: 2200000, addonNote: 'tặng 1 bịt mắt hoặc 1 áo tùy chọn', tone: '#8b5a36',
+    desc: '24 buổi online 1:1 với giáo viên × 45 phút', addon: 2200000, addonNote: 'tặng 1 bịt mắt hoặc 1 áo tùy chọn', tone: '#8b5a36', maxDiscount: 500000,
     includes: ['24 buổi Online 1 kèm 1 với giáo viên, 45 phút/buổi', '4 chặng, 12 chủ đề nhân cách'],
     gifts: [{ name: 'Bộ học liệu Memohack Kits', value: 1000000 }],
   },
@@ -32,7 +32,7 @@ export const PACKAGES = [
   },
 ];
 
-/** Chính sách mua chung: 2 tài khoản giảm 5% tổng tiền, 3 tài khoản giảm 10% tổng tiền. */
+/** Chính sách mua chung: 2 tài khoản giảm 5% tổng tiền, 3 tài khoản giảm 10% tổng tiền. Chỉ áp dụng cho Memohack 12 tháng (groupEligible). Gói 1:1 giảm tối đa maxDiscount mỗi tài khoản. */
 export const GROUP_RULES = [
   { accounts: 2, rate: 0.05 },
   { accounts: 3, rate: 0.1 },
@@ -83,20 +83,33 @@ export function installmentFee(bank, tenureId, principal) {
  * items: { [pkgId]: { qty, addon } }
  */
 export function calcQuote({ items, groupOn, customPct, customVnd, installment, tenureId, bank }) {
-  let base = 0, addon = 0, qtyTotal = 0, days = 0, sessions = 0;
+  let base = 0, addon = 0, qtyTotal = 0, days = 0, sessions = 0, groupQty = 0, groupBase = 0;
+  const lines = [];
   for (const [id, cfg] of Object.entries(items)) {
     const p = PACKAGES.find((x) => x.id === id);
     if (!p) continue;
+    const lineGross = ((cfg.price ?? p.price ?? 0) + (cfg.addon ? p.addon : 0)) * cfg.qty;
     base += (cfg.price ?? p.price ?? 0) * cfg.qty;
     if (cfg.addon) addon += p.addon * cfg.qty;
     qtyTotal += cfg.qty;
+    if (p.groupEligible) { groupQty += cfg.qty; groupBase += lineGross; }
+    lines.push({ p, qty: cfg.qty, gross: lineGross });
     days = Math.max(days, p.days);
     sessions += p.sessions * cfg.qty;
   }
   const gross = base + addon;
-  const groupRate = groupOn ? groupRateFor(qtyTotal) : 0;
-  const groupAmt = Math.round(gross * groupRate);
-  const customAmt = Math.round(gross * (customPct / 100)) + customVnd;
+  // Mua chung: chỉ tính các suất Memohack 12 tháng
+  const groupRate = groupOn ? groupRateFor(groupQty) : 0;
+  const groupAmt = Math.round(groupBase * groupRate);
+  // Giảm thêm: chia theo tỷ lệ giá từng dòng, gói có trần (1:1) bị cắt theo trần mỗi tài khoản
+  const customRaw = Math.round(gross * (customPct / 100)) + customVnd;
+  let customAmt = 0;
+  for (const l of lines) {
+    const share = gross ? (customRaw * l.gross) / gross : 0;
+    customAmt += l.p.maxDiscount != null ? Math.min(share, l.p.maxDiscount * l.qty) : share;
+  }
+  customAmt = Math.round(customAmt);
+  const customCapped = customAmt < customRaw;
   const discount = Math.min(gross, groupAmt + customAmt);
   const final = gross - discount;
   const effectivePct = gross ? (discount / gross) * 100 : 0;
@@ -106,7 +119,7 @@ export function calcQuote({ items, groupOn, customPct, customVnd, installment, t
   const monthly = installment ? Math.ceil((principal + fee) / tenureId) : 0;
 
   return {
-    gross, groupAmt, customAmt, discount, final, effectivePct, qtyTotal, groupRate,
+    gross, groupAmt, customAmt, customRaw, customCapped, discount, final, effectivePct, qtyTotal, groupQty, groupRate,
     fee, total: final + fee, monthly,
     perDay: days ? final / days : 0,
     perSession: sessions ? final / sessions : 0,

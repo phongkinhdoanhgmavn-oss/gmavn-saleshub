@@ -5,6 +5,7 @@ import Templates from './pages/Templates';
 import Quote from './pages/Quote';
 import Library from './pages/Library';
 import Kpi from './pages/Kpi';
+import Invoice from './pages/Invoice';
 
 // Xử lý từ chối đã chuyển vào Kho: link cũ tự chuyển sang
 function ObjectionsRedirect() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="bao-gia" element={<Quote />} />
         <Route path="tu-choi" element={<ObjectionsRedirect />} />
         <Route path="tin-soan" element={<Templates />} />
+        <Route path="hoa-don" element={<Invoice />} />
         <Route path="kpi" element={<Kpi />} />
         <Route path="kho" element={<Library />} />
         <Route path="*" element={<Navigate to="/" replace />} />
