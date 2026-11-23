@@ -18,7 +18,8 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
 export const OBJECTIONS = rawObjections.map((o) => {
   const i = o.category.indexOf(' ');
-  return { ...o, emoji: o.category.slice(0, i), cat: cap(o.category.slice(i + 1)) };
+  // aRaw giữ chỗ {xung} để trang Từ chối điền Cô hoặc Thầy theo người tư vấn. a dùng cho tìm kiếm, mặc định Cô.
+  return { ...o, aRaw: o.a, a: o.a.replaceAll('{xung}', 'Cô'), emoji: o.category.slice(0, i), cat: cap(o.category.slice(i + 1)) };
 });
 export const OBJ_CATS = [...new Set(OBJECTIONS.map((o) => o.cat))].map((cat) => ({
   cat,
@@ -55,7 +56,7 @@ const OBJECTION_SECTION = {
   icon: ShieldQuestion,
   tone: 'bg-cam-soft text-cam-dark',
   special: true,
-  verify: 'Một số câu đáp có cam kết (hoàn tiền 100%, FDA, "an toàn 100%", số liệu khảo sát) có thể trái quy tắc "không hứa quá". Cần rà lại trước khi dùng với phụ huynh.',
+  verify: 'Một số câu còn số liệu khảo sát và con số cụ thể chưa kiểm chứng, cân nhắc trước khi nói với phụ huynh. Chứng nhận thiết bị nói theo hướng "đã được chứng nhận an toàn 100%", không nêu tên chứng nhận.',
   details: [],
 };
 

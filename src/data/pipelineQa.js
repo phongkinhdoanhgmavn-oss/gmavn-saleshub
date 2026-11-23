@@ -159,9 +159,9 @@ export const PIPELINE_QA = {
     },
     {
       id: '3.q4', who: 'ph', q: 'Đo sóng não là gì? Bé có đau hay có sao không?',
-      say: 'Dạ bé chỉ đeo một thiết bị cảm biến nhẹ như băng đô, hoàn toàn không đau. Thiết bị Neuro Harmony M của Viện nghiên cứu não bộ Hàn Quốc chỉ thu nhận tín hiệu điện não tự nhiên của bé, không phát ra tia phóng xạ hay dòng điện kích thích. Kết quả cho thấy nhịp tập trung và mức căng thẳng của bé ở thời điểm đó để làm mốc luyện tập, không phải chẩn đoán y khoa ạ.',
+      say: 'Dạ bé chỉ đeo một thiết bị cảm biến nhẹ như băng đô, hoàn toàn không đau. Thiết bị Neuro Harmony M của Viện nghiên cứu não bộ Hàn Quốc chỉ thu nhận tín hiệu điện não tự nhiên của bé, không phát ra tia phóng xạ hay dòng điện kích thích. Thiết bị đã được chứng nhận an toàn 100%. Kết quả cho thấy nhịp tập trung và mức căng thẳng của bé ở thời điểm đó để làm mốc luyện tập, không phải chẩn đoán y khoa ạ.',
       points: ['Thông tin từ trang FAQ của GMA: không đau, không phát tia phóng xạ, không dòng điện kích thích.', 'Thiết bị phân tích hai bán cầu não, mức căng thẳng, tập trung, cân bằng năng lượng não, nhịp Gamma, Beta, SMR, Alpha, Theta, Delta.', 'Nhấn: làm mốc để so với chính bé, không phải chẩn đoán.'],
-      avoid: 'Không nói "an toàn 100%" hay nêu chứng nhận của thiết bị.',
+      avoid: 'Chỉ nói thiết bị "đã được chứng nhận an toàn 100%", không nêu tên chứng nhận cụ thể (FDA, CE). Không nói kết quả đo là chẩn đoán.',
     },
     {
       id: '3.q5', who: 'ph', q: 'Kết quả đo có nói bé bị bệnh hay tăng động không?',
@@ -293,7 +293,7 @@ export const PIPELINE_QA = {
       id: '5.q2', who: 'ph', q: 'Đắt quá!',
       say: {
         mmh12: 'Dạ {xung} hiểu {goi} cân nhắc, đây là khoản đầu tư lớn ạ. {xung} tính giúp {goi}: Memohack 12 tháng 42,5 triệu cho 144 buổi, tương đương khoảng 116.000đ mỗi ngày trong cả năm, chưa kể bé có 4 lần đo sóng não, coaching 1:1 và {goi} có lớp Parenting, kèm quà tặng trị giá 12 triệu. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
-        mmh11: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} tính giúp {goi}: gói 1:1 12,5 triệu cho 24 buổi, tương đương khoảng 520.000đ mỗi buổi 45 phút học riêng với giáo viên, kèm Bộ học liệu Memohack Kits. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
+        mmh11: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} tính giúp {goi}: gói 1:1 12,5 triệu cho 24 buổi, tương đương khoảng 520.000đ mỗi buổi 45 phút học riêng với giáo viên, kèm 12 buổi Offline tặng và Bộ học liệu Memohack Kits. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
         hyper: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} tính giúp {goi}: Hyperhack 13 triệu cho 120 buổi trong 60 ngày, tương đương khoảng 108.000đ mỗi buổi, bé luyện đều với Trainer chuyên biệt tại nhà. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
       },
       points: ['Đồng cảm, rồi chia nhỏ giá trị thành đơn vị mỗi ngày hoặc mỗi buổi.', 'Nhắc lại điều phụ huynh lo ở bước 2 và gắn vào giá trị.', 'Có trả góp thẻ làm phương án chia nhỏ.'],
@@ -337,11 +337,10 @@ export const PIPELINE_QA = {
       id: '5.q9', who: 'ph', q: 'Gói này tặng kèm những gì?',
       say: {
         mmh12: 'Dạ khóa Memohack 12 tháng tặng kèm trị giá 12 triệu gồm: khóa ParentHack 15 bài dành cho cha mẹ trị giá 10 triệu, đo và đọc kết quả sóng não chuyên sâu cho bé trị giá 1 triệu, và Bộ học liệu Memohack Kits trị giá 1 triệu ạ.',
-        mmh11: 'Dạ gói 1:1 tặng kèm Bộ học liệu Memohack Kits trị giá 1 triệu ạ. Nếu {goi} muốn học thêm buổi Offline thì có suất bổ sung 2,2 triệu, tặng 1 bịt mắt hoặc 1 áo tùy chọn ạ.',
-        hyper: 'Dạ Hyperhack gồm chương trình online 60 ngày, 120 buổi với Trainer chuyên biệt và bộ ba bài tập memoKUNGFU, memoEYE, memoSTATE, bé còn có bộ học liệu gửi tận nhà. {xung} xin kiểm tra giúp {goi} chương trình tặng khóa ParentHack dành cho Ba Mẹ đang áp dụng và số suất còn lại trong tháng ạ.',
+        mmh11: 'Dạ gói 1:1 tặng kèm 12 buổi Offline, mỗi tuần một buổi, bé học chung lớp Memohack tại trung tâm, {goi} tự chọn có tham gia hay không. Đây là quà tặng đồng hành nên không quy đổi ra tiền và không hoàn tiền. Ngoài ra bé còn có Bộ học liệu Memohack Kits gửi tận nhà ạ.',
+        hyper: 'Dạ Hyperhack tặng kèm khóa ParentHack trị giá 4 triệu dành riêng cho Ba Mẹ, giúp {goi} hiểu tâm lý và đồng hành cùng bé một cách bình an hơn. Chương trình gồm online 60 ngày, 120 buổi với Trainer chuyên biệt và bộ ba bài tập memoKUNGFU, memoEYE, memoSTATE ạ.',
       },
-      points: ['Nói quà tặng đúng danh sách, kèm giá trị.', 'Memohack 12 tháng còn có suất Offline bổ sung 5,5 triệu nếu khách muốn.', 'Website GMA đang ghi Hyperhack tặng khóa ParentHack trị giá 4 triệu cho Ba Mẹ (số lượng giới hạn mỗi tháng).'],
-      verify: 'Website ghi Hyperhack tặng khóa ParentHack 4 triệu khi đăng ký, và gói 1:1 tặng 12 buổi Offline. Trang Báo giá hiện ghi Hyperhack chưa có quà, gói 1:1 là Bộ học liệu Memohack Kits kèm suất Offline bổ sung 2,2 triệu. Cần anh xác nhận để Sales nói đúng.',
+      points: ['Nói quà tặng đúng danh sách, kèm giá trị nếu có.', 'Memohack 12 tháng còn có suất Offline bổ sung 5,5 triệu nếu khách muốn.', 'Gói 1:1: 12 buổi Offline là quà tặng, không quy đổi ra tiền, không hoàn tiền.', 'Số suất ưu đãi ParentHack có thể giới hạn mỗi tháng, kiểm tra trước khi hứa.'],
     },
     {
       id: '5.q10', who: 'cs', q: 'Còn điều gì Ba Mẹ băn khoăn trước khi quyết định?',
@@ -360,9 +359,8 @@ export const PIPELINE_QA = {
   6: [
     {
       id: '6.q1', who: 'ph', q: 'Khi nào bé có lịch học, ai liên hệ với tôi?',
-      say: 'Dạ sau khi kế toán xác nhận tiền về, {xung} sẽ tạo nhóm với {goi} và các cô. Phòng Đào tạo phân công cô phụ trách và xếp lịch học cho bé {be}, từ đó các cô sẽ đồng hành cùng bé ạ. {goi} cho {xung} xin khung giờ bé rảnh trong tuần để {xung} chuyển các cô xếp lịch ạ.',
-      points: ['Quy trình bàn giao: gửi bill cho Kế toán, gửi thông tin học viên cho Trainer, kích hoạt tài khoản, tạo nhóm với phụ huynh.', 'Dùng mẫu "Gửi Trainer xếp lịch học" trong Tin soạn sẵn.'],
-      verify: 'Thời gian từ lúc thanh toán đến buổi học đầu tiên, Sales hỏi lại Trainer trước khi hứa ngày cụ thể.',
+      say: 'Dạ sau khi kế toán xác nhận tiền về, {xung} sẽ tạo nhóm với {goi} và các cô. Đội ngũ Trainer sẽ hỗ trợ {goi} sắp xếp thời gian học phù hợp với lịch của bé {be}, từ đó các cô đồng hành cùng bé ạ. {goi} cho {xung} xin khung giờ bé rảnh trong tuần để {xung} chuyển các cô xếp lịch ạ.',
+      points: ['Quy trình bàn giao: gửi bill cho Kế toán, gửi thông tin học viên cho Trainer, kích hoạt tài khoản, tạo nhóm với phụ huynh.', 'Dùng mẫu "Gửi Trainer xếp lịch học" trong Tin soạn sẵn.', 'Thời gian bắt đầu do đội ngũ Trainer sắp xếp cùng phụ huynh, không hứa ngày cụ thể.'],
     },
     {
       id: '6.q2', who: 'ph', q: 'Tài khoản học đăng nhập thế nào?',

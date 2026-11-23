@@ -23,8 +23,8 @@ export const QUICK_FACTS = [
 
 export const CHOOSE_COURSE = [
   { course: 'Memohack 12 tháng (42,5 triệu)', fit: 'Muốn con học bài bản, lâu dài, cả nhà cùng đồng hành.', point: '144 buổi (96 Online + 48 Offline), 4 lần đo sóng não, coaching 1:1 không giới hạn, lớp Parenting cho Ba Mẹ, quà tặng kèm trị giá 12 triệu. Mục tiêu của chương trình: nhớ 100 từ trong 60 giây.' },
-  { course: 'Memohack 1:1 trực tuyến (12,5 triệu)', fit: 'Muốn có người kèm riêng, lịch linh hoạt, học tại nhà.', point: '24 buổi Online 1 kèm 1 với giáo viên, 45 phút mỗi buổi, 4 chặng, 12 chủ đề nhân cách.' },
-  { course: 'Hyperhack (13 triệu)', fit: 'Muốn chương trình tập trung ngắn ngày, rèn thói quen học.', point: '60 ngày, 120 buổi Online với Trainer chuyên biệt, bộ ba memoKUNGFU, memoEYE, memoSTATE.' },
+  { course: 'Memohack 1:1 trực tuyến (12,5 triệu)', fit: 'Muốn có người kèm riêng, lịch linh hoạt, học tại nhà.', point: '24 buổi Online 1 kèm 1 với giáo viên, 45 phút mỗi buổi, 4 chặng, 12 chủ đề nhân cách, tặng 12 buổi Offline (không quy đổi ra tiền).' },
+  { course: 'Hyperhack (13 triệu)', fit: 'Muốn chương trình tập trung ngắn ngày, rèn thói quen học.', point: '60 ngày, 120 buổi Online với Trainer chuyên biệt, bộ ba memoKUNGFU, memoEYE, memoSTATE, tặng khóa ParentHack trị giá 4 triệu cho Ba Mẹ.' },
 ];
 
 // item: { id, title, when, text } hoặc { byCourse: { mmh12, mmh11, hyper } } khi khác nhau theo khóa
@@ -122,8 +122,8 @@ const PIPELINE_RAW = [
       { id: '4.6', title: 'Tuần 3, lần 1: ưu đãi theo khóa', when: 'Ngày 15',
         byCourse: {
           mmh12: 'Hiện khóa 12 tháng có quà tặng kèm trị giá 12 triệu. Nếu gia đình có thêm bạn cùng tham gia, {xung} tư vấn ưu đãi mua chung cho {goi} ạ.',
-          mmh11: 'Gói 1:1 kèm Bộ học liệu Memohack Kits. Nếu muốn học thêm buổi Offline, {xung} báo {goi} suất bổ sung ạ.',
-          hyper: 'Hyperhack có Trainer chuyên biệt theo bé suốt 60 ngày. {xung} giữ lịch bắt đầu cho gia đình mình nhé?',
+          mmh11: 'Gói 1:1 tặng 12 buổi Offline học chung lớp Memohack tại trung tâm (quà tặng đồng hành, không quy đổi ra tiền) kèm Bộ học liệu Memohack Kits. {goi} tự chọn có tham gia Offline hay không ạ.',
+          hyper: 'Hyperhack có Trainer chuyên biệt theo bé suốt 60 ngày và tặng khóa ParentHack trị giá 4 triệu dành cho {goi}. {xung} giữ lịch bắt đầu cho gia đình mình nhé?',
         } },
       { id: '4.7', title: 'Tuần 3, lần 2: giải đáp thắc mắc', when: 'Ngày 17',
         text: '{xung} thấy nhiều Ba Mẹ hay hỏi [câu hỏi thường gặp]. {xung} trả lời nhanh để {goi} tham khảo: [câu trả lời ngắn]. {goi} còn băn khoăn điều gì, {xung} giải đáp ngay ạ.' },
@@ -147,8 +147,8 @@ const PIPELINE_RAW = [
         link: { to: '/bao-gia', label: 'Mở Báo giá' },
         byCourse: {
           mmh12: 'Dạ {xung} gửi {goi} báo giá Memohack 12 tháng (42.500.000đ) cho bé {be}: 144 buổi, 4 lần đo sóng não, coaching 1:1 và lớp Parenting, kèm quà tặng trị giá 12 triệu. {goi} chọn bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
-          mmh11: 'Dạ {xung} gửi {goi} báo giá Memohack 1:1 (12.500.000đ): 24 buổi Online 45 phút, học riêng với giáo viên, kèm Bộ học liệu Memohack Kits. {goi} chọn bé {be} học lịch [A] hay [B] để {xung} xếp giáo viên ạ?',
-          hyper: 'Dạ {xung} gửi {goi} báo giá Hyperhack (13.000.000đ): 60 ngày, 120 buổi Online với Trainer chuyên biệt. {goi} chọn bé {be} bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
+          mmh11: 'Dạ {xung} gửi {goi} báo giá Memohack 1:1 (12.500.000đ): 24 buổi Online 45 phút, học riêng với giáo viên, tặng 12 buổi Offline và Bộ học liệu Memohack Kits. {goi} chọn bé {be} học lịch [A] hay [B] để {xung} xếp giáo viên ạ?',
+          hyper: 'Dạ {xung} gửi {goi} báo giá Hyperhack (13.000.000đ): 60 ngày, 120 buổi Online với Trainer chuyên biệt, tặng khóa ParentHack trị giá 4 triệu cho {goi}. {goi} chọn bé {be} bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
         } },
       { id: '5.2', title: 'Gửi mã QR thanh toán', when: 'Khi Ba Mẹ đồng ý',
         text: 'Dạ {xung} gửi {goi} mã QR thanh toán [số tiền]. {goi} chuyển xong nhắn {xung} ảnh biên lai, {xung} báo kế toán xác nhận và giữ chỗ cho bé {be} ạ.' },

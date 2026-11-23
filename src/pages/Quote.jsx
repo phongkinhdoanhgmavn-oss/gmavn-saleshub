@@ -107,10 +107,12 @@ export default function Quote() {
   // Gộp quà tặng của các gói đã chọn (nhân theo số suất)
   const gifts = selected.flatMap((id) => pkgOf(id).gifts.map((g) => ({ ...g, qty: items[id].qty })));
   const giftTotal = gifts.reduce((a, g) => a + g.value * g.qty, 0);
+  // Quà có giá trị 0 là quà tặng đồng hành, không quy đổi ra tiền
+  const giftTail = (g, q = 1) => (g.value > 0 ? ` (${fmt(g.value * q)})` : ' (quà tặng, không quy đổi ra tiền, không hoàn tiền)');
 
   const message = () =>
     [
-      `Dạ, ${salesLabel ? salesLabel + ' (GMA Việt Nam)' : 'GMA Việt Nam'} xin gửi anh/chị báo giá:`,
+      `Dạ, ${salesLabel ? salesLabel + ' (GMA Việt Nam)' : 'GMA Việt Nam'} xin gửi Ba Mẹ báo giá:`,
       '',
       `• Chương trình: ${lines.join(' + ') || '—'}`,
       q.discount > 0 ? `• Giá niêm yết: ${fmt(q.gross)}` : null,
@@ -118,7 +120,7 @@ export default function Quote() {
       q.customAmt > 0 ? `• Ưu đãi thêm: -${fmt(q.customAmt)}` : null,
       `• Học phí: ${fmt(q.final)}`,
       `• Tương đương khoảng ${fmt(q.perDay)}/ngày`,
-      gifts.length ? `\nQuà tặng kèm (trị giá ${fmt(giftTotal)}):\n${gifts.map((g) => `🎁 ${g.name}${g.qty > 1 ? ` x${g.qty}` : ''} (${fmt(g.value * g.qty)})`).join('\n')}` : null,
+      gifts.length ? `\nQuà tặng kèm${giftTotal > 0 ? ` (trị giá ${fmt(giftTotal)})` : ''}:\n${gifts.map((g) => `🎁 ${g.name}${g.qty > 1 ? ` x${g.qty}` : ''}${giftTail(g, g.qty)}`).join('\n')}` : null,
       installment ? `\nTrả góp ${tenureId} tháng qua thẻ ${bank}:\n• Phí chuyển đổi: ${fmt(q.fee)}\n• Mỗi tháng: ${fmt(q.monthly)}` : null,
       '',
       POLICY.vatNote,
@@ -223,7 +225,7 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                                   <p className="text-xs font-bold uppercase tracking-wider text-cam-dark flex items-center gap-1.5"><Gift className="w-3.5 h-3.5" /> Tặng kèm</p>
                                   <button
                                     className="h-9 px-2.5 rounded-lg text-xs font-bold text-cam-dark inline-flex items-center gap-1 hover:bg-white"
-                                    onClick={() => copy([`Quà tặng kèm ${p.name} (trị giá ${fmt(gv)}):`, ...p.gifts.map((g) => `🎁 ${g.name} (${fmt(g.value)})`)].join('\n'), 'Đã copy phần tặng kèm')}
+                                    onClick={() => copy([`Quà tặng kèm ${p.name}${gv > 0 ? ` (trị giá ${fmt(gv)})` : ''}:`, ...p.gifts.map((g) => `🎁 ${g.name}${giftTail(g)}`)].join('\n'), 'Đã copy phần tặng kèm')}
                                   >
                                     <Copy className="w-3.5 h-3.5" /> Copy
                                   </button>
@@ -231,9 +233,9 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                                 <ul>
                                   {p.gifts.map((g) => (
                                     <li key={g.name}>
-                                      <button className="w-full text-left flex justify-between gap-3 py-1.5 rounded-lg active:bg-white" onClick={() => copy(`🎁 ${g.name} (${fmt(g.value)})`, 'Đã copy quà này')} title="Bấm để copy riêng quà này">
+                                      <button className="w-full text-left flex justify-between gap-3 py-1.5 rounded-lg active:bg-white" onClick={() => copy(`🎁 ${g.name}${giftTail(g)}`, 'Đã copy quà này')} title="Bấm để copy riêng quà này">
                                         <span>{g.name}</span>
-                                        <b className="whitespace-nowrap">{fmtShort(g.value)}</b>
+                                        <b className="whitespace-nowrap">{g.value > 0 ? fmtShort(g.value) : 'Không quy đổi'}</b>
                                       </button>
                                     </li>
                                   ))}

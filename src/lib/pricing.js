@@ -22,13 +22,16 @@ export const PACKAGES = [
     id: 'memohack_3t_1v1', name: 'Memohack 3 tháng 1:1 trực tuyến', short: '3T 1:1', price: 12500000, days: 90, sessions: 24,
     desc: '24 buổi online 1:1 với giáo viên × 45 phút', addon: 2200000, addonNote: 'tặng 1 bịt mắt hoặc 1 áo tùy chọn', tone: '#8b5a36', maxDiscount: 500000,
     includes: ['24 buổi Online 1 kèm 1 với giáo viên, 45 phút/buổi', '4 chặng, 12 chủ đề nhân cách'],
-    gifts: [{ name: 'Bộ học liệu Memohack Kits', value: 1000000 }],
+    gifts: [
+      { name: 'Bộ học liệu Memohack Kits', value: 1000000 },
+      { name: '12 buổi Offline học chung lớp Memohack tại trung tâm', value: 0 }, // quà tặng đồng hành, không quy đổi ra tiền, không hoàn tiền
+    ],
   },
   {
     id: 'hyperhack', name: 'Hyperhack (trẻ đặc biệt)', short: 'HH', price: 13000000, days: 60, sessions: 120,
     desc: '120 buổi Online · 60 ngày', addon: 0, tone: '#6b4226',
     includes: ['Chương trình online 60 ngày, 120 buổi', '100% Online với Trainer chuyên biệt', 'Bộ ba bài tập memoKUNGFU, memoEYE, memoSTATE'],
-    gifts: [],
+    gifts: [{ name: 'Khóa ParentHack dành cho Ba Mẹ', value: 4000000 }],
   },
 ];
 

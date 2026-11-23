@@ -4,8 +4,12 @@ import { Copy, ChevronDown, Search } from 'lucide-react';
 import { OBJECTIONS, OBJ_CATS } from '../data';
 import { PageHeader, Chip, useCopy } from '../lib/ui';
 import { norm } from '../lib/search';
+import { useSalesInfo } from '../lib/sales';
 
 export default function Objections({ embedded = false }) {
+  const { info } = useSalesInfo();
+  // Câu đáp xưng Cô hoặc Thầy theo người tư vấn đã lưu, gọi phụ huynh là Ba Mẹ
+  const say = (o) => o.aRaw.replaceAll('{xung}', info.title || 'Cô');
   const [params] = useSearchParams();
   const target = Number(params.get('n')) || null;
   const [cat, setCat] = useState('all');
@@ -60,7 +64,7 @@ export default function Objections({ embedded = false }) {
                 <span className="flex-1 min-w-0">
                   <span className="block text-[11px] font-bold uppercase tracking-wider text-nau">{o.cat}</span>
                   <span className="block font-heading font-bold text-[17px] leading-snug mt-0.5">"{o.q}"</span>
-                  {!isOpen && <span className="block text-sm text-nau mt-1 line-clamp-2">{o.a}</span>}
+                  {!isOpen && <span className="block text-sm text-nau mt-1 line-clamp-2">{say(o)}</span>}
                 </span>
                 <ChevronDown className={`w-5 h-5 text-nau mt-1 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -68,10 +72,10 @@ export default function Objections({ embedded = false }) {
                 <div className="px-4 pb-4">
                   <div className="rounded-xl bg-cam-soft/60 border border-pas/60 p-4 text-[15px] leading-relaxed">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-cam-dark mb-1.5">Câu đáp gợi ý</p>
-                    {o.a}
+                    {say(o)}
                   </div>
                   <div className="mt-3 flex gap-2">
-                    <button className="btn-primary" onClick={() => copy(o.a, 'Đã copy câu đáp')}>
+                    <button className="btn-primary" onClick={() => copy(say(o), 'Đã copy câu đáp')}>
                       <Copy className="w-4 h-4" /> Copy câu đáp
                     </button>
                   </div>
