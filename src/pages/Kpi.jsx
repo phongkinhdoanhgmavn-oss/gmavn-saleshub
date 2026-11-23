@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Plus, Minus, Info, Trophy, Flag } from 'lucide-react';
 import { PageHeader, Card, useTyping } from '../lib/ui';
 import { PACKAGES, fmt, fmtShort, fmtTr as trieu } from '../lib/pricing';
+import { fmtNum } from '../lib/format';
 import { KPI_DEFAULT, MARKS, BAR_MAX, KPI_STORAGE_KEY, kpiCalc, readKpiState } from '../lib/kpi';
 
 const digits = (s) => parseInt(String(s).replace(/\D/g, ''), 10) || 0;
-const fmtInput = (n) => (n ? n.toLocaleString('vi-VN') : '');
+const fmtInput = (n) => (n ? fmtNum(n) : '');
 
 export default function Kpi() {
   const typing = useTyping();

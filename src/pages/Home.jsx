@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Search, Target, Calculator, MessageSquareText, BookOpen, ArrowRight, Gift, Phone, MapPin, Clock } from 'lucide-react';
 import { CONTACT, PROMOS } from '../config';
+import { dateLabelVN } from '../lib/format';
 import { kpiSummary, BAR_MAX, MARKS } from '../lib/kpi';
 import { fmt, fmtShort } from '../lib/pricing';
 
@@ -26,7 +27,7 @@ export default function Home() {
     <div className="space-y-6">
       <div>
         <p className="text-sm font-semibold text-nau">
-          {today.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric' })}
+          {dateLabelVN(today)}
         </p>
         <h1 className="font-heading font-extrabold text-3xl lg:text-4xl mt-1">{greeting()} 👋</h1>
         <p className="text-nau mt-1">Hôm nay bạn cần hỗ trợ gì?</p>

@@ -1,3 +1,4 @@
+import { fmtNum } from './format';
 // Logic báo giá, chuyển từ bản cũ sang module riêng để dễ kiểm tra.
 export const PACKAGES = [
   {
@@ -53,7 +54,7 @@ export const BANKS = [
   'TPBank', 'Maritime Bank (MSB)', 'MCredit', 'Shinhan Bank', 'HSBC', 'SCB', 'OCB', 'HDBank', 'Eximbank',
 ];
 
-export const fmt = (n) => Math.round(n).toLocaleString('vi-VN') + 'đ';
+export const fmt = (n) => fmtNum(n) + 'đ';
 // Số gọn cho thanh cố định: 6.150.000 -> "6,15 tr"
 export const fmtTr = (n) => (n ? `${String(Math.round(n / 1e4) / 100).replace('.', ',')} tr` : '0');
 export const fmtShort = (n) => {

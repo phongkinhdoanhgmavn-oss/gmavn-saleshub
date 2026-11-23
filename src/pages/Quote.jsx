@@ -3,6 +3,7 @@ import { Check, Copy, Minus, Plus, AlertTriangle, Send, Table2, Info, QrCode, Bu
 import { PageHeader, Chip, useCopy, useTyping } from '../lib/ui';
 import { PACKAGES, TENURES, BANKS, GROUP_RULES, calcQuote, giftValue, groupRateFor, fmt, fmtShort, fmtTr } from '../lib/pricing';
 import { POLICY, BANK_ACCOUNTS, COMPANY_ACCOUNT_THRESHOLD } from '../config';
+import { fmtNum } from '../lib/format';
 import PaymentQr from '../components/PaymentQr';
 import { useSalesInfo } from '../lib/sales';
 
@@ -204,7 +205,7 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                         {p.price == null && (
                           <label className="block">
                             <span className="text-sm font-semibold">Học phí gói này (đ)</span>
-                            <input className="field mt-1" inputMode="numeric" placeholder="Nhập học phí" value={items[p.id].price ? items[p.id].price.toLocaleString('vi-VN') : ''} onChange={(e) => setPrice(p.id, e.target.value)} />
+                            <input className="field mt-1" inputMode="numeric" placeholder="Nhập học phí" value={items[p.id].price ? fmtNum(items[p.id].price) : ''} onChange={(e) => setPrice(p.id, e.target.value)} />
                           </label>
                         )}
 
@@ -359,7 +360,7 @@ Hỗ trợ: ${[salesLabel, salesPhone].filter(Boolean).join(' · ')}` : null,
                 </label>
                 <label className="block">
                   <span className="text-sm text-nau">Giảm thêm (đ)</span>
-                  <input className="field mt-1" inputMode="numeric" placeholder="0" value={customVnd} onChange={(e) => setCustomVnd(digits(e.target.value) ? digits(e.target.value).toLocaleString('vi-VN') : '')} />
+                  <input className="field mt-1" inputMode="numeric" placeholder="0" value={customVnd} onChange={(e) => setCustomVnd(digits(e.target.value) ? fmtNum(digits(e.target.value)) : '')} />
                 </label>
               </div>
               {needApproval && (

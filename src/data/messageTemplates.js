@@ -1,3 +1,5 @@
+import { fmtNum, isValidDate } from '../lib/format';
+
 // Tin soạn sẵn: Sales nhập thông tin, app ghép thành tin nhắn để copy gửi vào nhóm.
 // Muốn thêm mẫu mới hoặc đổi chữ, sửa tại đây.
 
@@ -64,12 +66,11 @@ export const MESSAGE_TEMPLATES = [
   },
 ];
 
-const fmtMoney = (v) => (v ? `${Number(v).toLocaleString('vi-VN')}đ` : '');
-const fmtDate = (v) => (v ? v.split('-').reverse().join('/') : '');
+const fmtMoney = (v) => (v ? `${fmtNum(v)}đ` : '');
 
 export function formatValue(field, v) {
   if (field.type === 'money') return fmtMoney(v);
-  if (field.type === 'date') return fmtDate(v);
+  if (field.type === 'date') return (v ?? '').trim();
   return (v ?? '').toString().trim();
 }
 
@@ -86,6 +87,6 @@ export function buildMessage(tpl, form, tags) {
 }
 
 export function missingFields(tpl, form) {
-  return tpl.fields.filter((f) => f.required && !formatValue(f, form[f.key])).map((f) => f.label)
+  return tpl.fields.filter((f) => f.required && (f.type === 'date' ? !isValidDate(form[f.key]) : !formatValue(f, form[f.key]))).map((f) => f.label)
     .concat(form.course ? [] : ['Khóa học']);
 }

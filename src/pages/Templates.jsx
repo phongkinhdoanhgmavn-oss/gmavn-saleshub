@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Receipt, CalendarClock, Copy, RotateCcw, Check, AlertCircle, Wand2, Plus } from 'lucide-react';
+import { fmtNum, maskDate, isValidDate, todayVN } from '../lib/format';
 import { PageHeader, Card, useCopy, useToast, useTyping } from '../lib/ui';
 import { COURSE_OPTIONS, TAG_PEOPLE, MESSAGE_TEMPLATES, buildMessage, missingFields } from '../data/messageTemplates';
 
 const ICONS = { Receipt, CalendarClock };
 const digits = (s) => String(s).replace(/\D/g, '');
-const today = () => new Date().toISOString().slice(0, 10);
 
 // Thông tin học viên là dữ liệu cá nhân: chỉ giữ trong bộ nhớ khi app đang mở (không lưu xuống máy).
 const defaultTagMap = () => Object.fromEntries(MESSAGE_TEMPLATES.map((t) => [t.id, t.defaultTags]));
-let draft = { form: { regDate: today() }, tagMap: defaultTagMap(), tpl: MESSAGE_TEMPLATES[0].id };
+let draft = { form: { regDate: todayVN() }, tagMap: defaultTagMap(), tpl: MESSAGE_TEMPLATES[0].id };
 
 function readLastQuote() {
   try { return JSON.parse(localStorage.getItem('last_quote') || 'null'); } catch { return null; }
@@ -19,7 +19,7 @@ function Field({ f, value, onChange, disabled }) {
   const base = 'field';
   const label = (
     <span className="text-sm font-semibold flex items-start gap-1">
-      <span>{f.label}</span>
+      <span>{f.label}{f.type === 'date' && <span className="font-normal text-nau"> (ngày/tháng/năm)</span>}</span>
       {f.required && <span className="text-bad" aria-hidden="true">*</span>}
     </span>
   );
@@ -28,12 +28,28 @@ function Field({ f, value, onChange, disabled }) {
     control = (
       <input
         className={base} inputMode="numeric" placeholder={f.placeholder} disabled={disabled}
-        value={value ? Number(value).toLocaleString('vi-VN') : ''}
+        value={value ? fmtNum(value) : ''}
         onChange={(e) => onChange(digits(e.target.value))}
       />
     );
   } else if (f.type === 'date') {
-    control = <input className={base} type="date" value={value || ''} onChange={(e) => onChange(e.target.value)} disabled={disabled} />;
+    // Ô ngày tự định dạng ngày/tháng/năm bằng số, không dùng lịch của trình duyệt (tránh hiện "Nov" bằng tiếng Anh)
+    const bad = (value || '').length === 10 && !isValidDate(value);
+    control = (
+      <span className="block">
+        <span className="flex gap-2">
+          <input
+            className={`${base} ${bad ? 'border-bad focus:border-bad focus:ring-bad/25' : ''}`}
+            inputMode="numeric" autoComplete="off" maxLength={10} placeholder="22/11/2026" aria-invalid={bad}
+            value={value || ''} onChange={(e) => onChange(maskDate(e.target.value))} disabled={disabled}
+          />
+          {f.key === 'regDate' && (
+            <button type="button" onClick={() => onChange(todayVN())} className="h-11 px-3.5 shrink-0 rounded-xl bg-cam-soft text-cam-dark text-sm font-semibold">Hôm nay</button>
+          )}
+        </span>
+        {bad && <span className="block text-xs text-bad mt-1">Ngày chưa đúng, nhập theo dạng ngày/tháng/năm, ví dụ 22/11/2026.</span>}
+      </span>
+    );
   } else if (f.type === 'textarea') {
     control = (
       <textarea
@@ -105,7 +121,7 @@ export default function Templates() {
     toast('Đã điền khóa học và học phí từ báo giá gần nhất');
   };
   const remain = Math.max(0, Number(form.fee || 0) - Number(form.pay1 || 0));
-  const reset = () => { setForm({ regDate: today() }); setTagMap(defaultTagMap()); };
+  const reset = () => { setForm({ regDate: todayVN() }); setTagMap(defaultTagMap()); };
   const toggleTag = (t) => setTagMap((m) => ({ ...m, [tplId]: m[tplId].includes(t) ? m[tplId].filter((x) => x !== t) : [...m[tplId], t] }));
   const doCopy = () => copy(message, missing.length ? `Đã copy, còn thiếu ${missing.length} mục` : 'Đã copy tin nhắn, dán vào nhóm');
 
@@ -185,7 +201,7 @@ export default function Templates() {
 
             {isAccounting && !form.payOnce && remain > 0 && !form.pay2 && (
               <button onClick={() => set('pay2')(String(remain))} className="mt-3 h-10 px-3.5 rounded-lg text-sm font-semibold text-cam-dark bg-cam-soft">
-                Điền Trả lần 2 = phần còn lại ({remain.toLocaleString('vi-VN')}đ)
+                Điền Trả lần 2 = phần còn lại ({fmtNum(remain)}đ)
               </button>
             )}
           </Card>
