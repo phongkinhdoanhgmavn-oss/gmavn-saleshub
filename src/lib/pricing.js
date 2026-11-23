@@ -9,7 +9,7 @@ export const PACKAGES = [
       'Coaching 1:1 chuyên sâu, không giới hạn',
       'Lớp Zoom hỗ trợ hàng ngày từ thứ 2 đến thứ 7',
       'Lớp Parenting cho cha mẹ vào thứ 6 hàng tuần',
-      'Đầu ra cam kết: nhớ 100 từ / 60 giây',
+      'Mục tiêu của chương trình: nhớ 100 từ / 60 giây',
     ],
     gifts: [
       { name: 'Khóa học ParentHack 15 bài (quà tặng cha mẹ)', value: 10000000 },

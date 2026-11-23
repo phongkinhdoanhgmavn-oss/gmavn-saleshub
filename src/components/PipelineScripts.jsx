@@ -54,6 +54,13 @@ function Highlighted({ text }) {
 
 const toggleIn = (arr, v) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
+const WHO_LABEL = {
+  ph: { badge: 'Ba Mẹ hỏi', say: 'Cô trả lời' },
+  noi: { badge: 'Ba Mẹ nói', say: 'Cô trả lời' },
+  tt: { badge: 'Tình huống', say: 'Cô nói hoặc làm' },
+  co: { badge: 'Cô hỏi', say: 'Cô hỏi' },
+};
+
 export default function PipelineScripts() {
   const copy = useCopy();
   const sales = useSalesInfo();
@@ -226,7 +233,7 @@ export default function PipelineScripts() {
                 )}
 
                 <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-kem-deep" role="tablist" aria-label="Nội dung của bước">
-                  {[['qa', `Câu hỏi và cách trả lời (${st.qa.length})`], ['msg', `Tin nhắn mẫu (${st.items.length})`]].map(([k, label]) => (
+                  {[['qa', `${st.tabLabels?.qa ?? 'Câu hỏi và cách trả lời'} (${st.qa.length})`], ['msg', `${st.tabLabels?.msg ?? 'Tin nhắn mẫu'} (${st.items.length})`]].map(([k, label]) => (
                     <button key={k} role="tab" aria-selected={tab === k} onClick={() => setView((v) => ({ ...v, [st.n]: k }))}
                       className={`min-h-11 rounded-lg text-sm font-semibold px-1 leading-tight ${tab === k ? 'bg-white shadow-card text-kb-dark' : 'text-nau'}`}>{label}</button>
                   ))}
@@ -236,13 +243,14 @@ export default function PipelineScripts() {
                   const key = `${st.n}-${qa.id}`;
                   const itemOpen = openItems.includes(key);
                   const say = fill(typeof qa.say === 'string' ? qa.say : qa.say[course]);
-                  const ph = qa.who === 'ph';
+                  const ph = qa.who === 'ph' || qa.who === 'noi';
+                  const badge = WHO_LABEL[qa.who] ?? WHO_LABEL.co;
                   return (
                     <article key={key} className={`rounded-xl border bg-white ${itemOpen ? 'border-kb/60' : 'border-kem-deep'}`}>
                       <div className="flex items-stretch">
                         <button onClick={() => setOpenItems((o) => toggleIn(o, key))} aria-expanded={itemOpen}
                           className="flex-1 min-w-0 min-h-14 pl-3 pr-1 py-2 flex items-center gap-2.5 text-left">
-                          <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 shrink-0 ${ph ? 'bg-kb-soft text-kb-dark' : 'bg-cam-soft text-cam-dark'}`}>{ph ? 'Ba Mẹ hỏi' : 'Cô hỏi'}</span>
+                          <span className={`text-[11px] font-bold rounded-md px-1.5 py-0.5 shrink-0 ${ph ? 'bg-kb-soft text-kb-dark' : 'bg-cam-soft text-cam-dark'}`}>{badge.badge}</span>
                           <span className="min-w-0 flex-1">
                             <span className="block font-semibold leading-snug">{ph ? `“${qa.q}”` : qa.q}</span>
                             {qa.verify && <span className="block text-[11px] font-bold text-cam-dark leading-tight mt-0.5">Cần xác nhận</span>}
@@ -258,7 +266,7 @@ export default function PipelineScripts() {
                         <div className="px-3 pb-3 space-y-2.5">
                           {typeof qa.say === 'object' && <p className="text-xs font-bold text-kb-dark">Bản cho {courseLabel}</p>}
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-wider text-kb-dark mb-1">{ph ? 'Cô trả lời' : 'Cô hỏi'}</p>
+                            <p className="text-xs font-bold uppercase tracking-wider text-kb-dark mb-1">{badge.say}</p>
                             <div className="rounded-lg bg-kem p-3 text-[15px] leading-relaxed space-y-1.5"><Highlighted text={say} /></div>
                             <button className="mt-2 h-11 px-4 rounded-xl bg-kb text-white font-bold inline-flex items-center gap-2" onClick={() => copy(say, 'Đã copy câu trả lời')}><Copy className="w-4 h-4" /> Copy</button>
                           </div>
@@ -316,6 +324,9 @@ export default function PipelineScripts() {
                           <div className="rounded-lg bg-kem p-3 text-[15px] leading-relaxed space-y-1.5">
                             <Highlighted text={text} />
                           </div>
+                          {it.note && (
+                            <div className="rounded-lg border border-pas bg-cam-soft p-2.5 text-sm flex gap-2"><Info className="w-4 h-4 text-cam-dark shrink-0 mt-0.5" /> <span><b>Ghi chú nội bộ, không đọc to:</b> {it.note}</span></div>
+                          )}
                           <div className="flex flex-wrap gap-2">
                             <button className="h-11 px-4 rounded-xl bg-kb text-white font-bold inline-flex items-center gap-2" onClick={() => copy(text, 'Đã copy kịch bản')}><Copy className="w-4 h-4" /> Copy</button>
                             {it.link && (

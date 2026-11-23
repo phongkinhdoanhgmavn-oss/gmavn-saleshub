@@ -75,7 +75,7 @@ const SCRIPT_SECTION = {
   id: 'kich-ban',
   group: 'kb',
   title: 'Kịch bản theo Pipeline',
-  shortDesc: 'Câu hỏi và cách trả lời theo 6 bước và 3 khóa, điền tên là ra kịch bản',
+  shortDesc: 'Câu hỏi và cách trả lời theo 6 bước Pipeline, kèm buổi Trial 1:1 Online và 3 khóa, điền tên là ra kịch bản',
   icon: MessageSquare,
   tone: 'bg-kb-soft text-kb-dark',
   kind: 'pipeline',

@@ -1,4 +1,5 @@
 import { PIPELINE_QA } from './pipelineQa';
+import { TRIAL_STAGE } from './pipelineTrial';
 
 // Kịch bản theo Sales Pipeline GMA VN. Xưng "Cô/Thầy", gọi phụ huynh là "Ba/Mẹ + tên".
 // Chỗ {khóa} do app tự điền từ thông tin Sales và phụ huynh; chỗ [ngoặc vuông] Sales tự điền thêm.
@@ -18,13 +19,14 @@ export const QUICK_FACTS = [
   'Memohack 12 tháng và Hyperhack: Trial Offline vào Chủ nhật, tại cơ sở Hà Đông hoặc Cầu Giấy.',
   'Memohack 1:1 trực tuyến: Trial Online.',
   'Mốc đo sóng não: đo ban đầu (ở Trial) và đo lại sau 3 tháng. Memohack 12 tháng đo 4 lần trong năm (website ghi tháng 1, 3, 6, 12, tài liệu đào tạo ghi tháng 3, 6, 9, 12, chờ anh chốt).',
+  'QUY TẮC BẮT BUỘC: nói chi tiết giá trị trước, báo giá sau. Không chia sẻ học phí ngay ở câu đầu.',
   'Không tự giảm giá, không hứa kết quả, không chẩn đoán hay gán nhãn cho bé. Không nói về ưu đãi giới thiệu với phụ huynh.',
 ];
 
 export const CHOOSE_COURSE = [
-  { course: 'Memohack 12 tháng (42,5 triệu)', fit: 'Muốn con học bài bản, lâu dài, cả nhà cùng đồng hành.', point: '144 buổi (96 Online + 48 Offline), 4 lần đo sóng não, coaching 1:1 không giới hạn, lớp Parenting cho Ba Mẹ, quà tặng kèm trị giá 12 triệu. Mục tiêu của chương trình: nhớ 100 từ trong 60 giây.' },
-  { course: 'Memohack 1:1 trực tuyến (12,5 triệu)', fit: 'Muốn có người kèm riêng, lịch linh hoạt, học tại nhà.', point: '24 buổi Online 1 kèm 1 với giáo viên, 45 phút mỗi buổi, 4 chặng, 12 chủ đề nhân cách, tặng 12 buổi Offline (không quy đổi ra tiền).' },
-  { course: 'Hyperhack (13 triệu)', fit: 'Muốn chương trình tập trung ngắn ngày, rèn thói quen học.', point: '60 ngày, 120 buổi Online với Trainer chuyên biệt, bộ ba memoKUNGFU, memoEYE, memoSTATE, tặng khóa ParentHack trị giá 4 triệu cho Ba Mẹ.' },
+  { course: 'Memohack 12 tháng (42,5 triệu)', fit: 'Muốn con học bài bản, lâu dài, cả nhà cùng đồng hành.', point: '144 buổi (96 Online + 48 Offline), 4 lần đo sóng não, coaching 1:1 không giới hạn với chuyên gia của GMA VN, lớp Parenting cho Ba Mẹ, quà tặng kèm trị giá 12 triệu.' },
+  { course: 'Memohack 1:1 trực tuyến (12,5 triệu)', fit: 'Muốn có người kèm riêng, lịch linh hoạt, học tại nhà.', point: '24 buổi Online 1 kèm 1 với giáo viên, 45 phút mỗi buổi (mỗi tuần 2 buổi), 12 chủ đề nhân cách, tặng 12 buổi Offline (không quy đổi ra tiền).' },
+  { course: 'Hyperhack (13 triệu)', fit: 'Muốn chương trình tập trung ngắn ngày, rèn thói quen học, dành riêng cho trẻ VIP.', point: '60 ngày, 120 buổi Online có sự đồng hành từ Trainer và chuyên gia của GMA VN, bộ ba memoKUNGFU, memoEYE, memoSTATE, tặng khóa ParentHack trị giá 4 triệu cho Ba Mẹ.' },
 ];
 
 // item: { id, title, when, text } hoặc { byCourse: { mmh12, mmh11, hyper } } khi khác nhau theo khóa
@@ -63,9 +65,9 @@ const PIPELINE_RAW = [
         text: '{xung} chào {goi}. Hôm qua {xung} chưa gặp được {goi}. {xung} chỉ cần 3 phút để hỏi nhu cầu của bé và gửi lịch Trial phù hợp. {goi} cho {xung} biết giờ nào tiện ạ.' },
       { id: '2.4', title: 'Câu mời Trial và đo sóng não', when: 'Cuối cuộc gọi hoặc nhắn Zalo',
         byCourse: {
-          mmh12: 'GMA có buổi Trial và đo sóng não 90 phút vào Chủ nhật tại cơ sở {coso}. Giá 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
-          mmh11: 'GMA có buổi Trial và đo sóng não Online 90 phút. Giá 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} tiện {ngay} lúc {gio} không ạ để {xung} xếp lịch cho bé {be}?',
-          hyper: 'GMA có buổi Trial và đo sóng não 90 phút vào Chủ nhật tại cơ sở {coso}. Giá 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
+          mmh12: 'GMA có buổi Trial 90 phút vào Chủ nhật tại cơ sở {coso}: bé đo sóng não EEG 3D, trải nghiệm lớp MemoSchool, còn {goi} nghe chuyên gia đọc kết quả 1-1 và nhận báo cáo sóng não cá nhân hóa. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
+          mmh11: 'GMA có buổi Trial Online 90 phút: bé được đo sóng não và trải nghiệm cách học, còn {goi} nghe chuyên gia đọc kết quả 1-1. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} tiện {ngay} lúc {gio} không ạ để {xung} xếp lịch cho bé {be}?',
+          hyper: 'GMA có buổi Trial 90 phút vào Chủ nhật tại cơ sở {coso}: bé đo sóng não EEG 3D, trải nghiệm lớp MemoSchool, còn {goi} nghe chuyên gia đọc kết quả 1-1 và nhận báo cáo sóng não cá nhân hóa. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
         } },
     ],
   },
@@ -98,7 +100,7 @@ const PIPELINE_RAW = [
           ].join('\n'),
         } },
       { id: '3.5', title: 'Bé chưa đến Trial', when: 'G4.5 vắng',
-        text: '{xung} chào {goi}. Hôm nay {xung} chưa gặp được bé {be}. {xung} giữ lịch cho mình sang [ngày khác] được không ạ? Nếu bận, {xung} có thể sắp xếp buổi Online cho tiện.' },
+        text: '{xung} chào {goi}. Hôm nay {xung} chưa gặp được bé {be}. {xung} giữ lịch cho mình sang [ngày khác] được không? Nếu bận, {xung} có thể sắp xếp buổi Online cho tiện.' },
     ],
   },
   {
@@ -143,12 +145,12 @@ const PIPELINE_RAW = [
       'Đơn từ 37 triệu: gợi ý chuyển vào tài khoản công ty.',
     ],
     items: [
-      { id: '5.1', title: 'Gửi báo giá và chốt mềm', when: 'Sau khi Ba Mẹ đồng ý lộ trình',
+      { id: '5.1', title: 'Gửi báo giá và chốt mềm', when: 'Sau khi Ba Mẹ đồng ý lộ trình (nói giá trị trước, học phí sau)',
         link: { to: '/bao-gia', label: 'Mở Báo giá' },
         byCourse: {
-          mmh12: 'Dạ {xung} gửi {goi} báo giá Memohack 12 tháng (42.500.000đ) cho bé {be}: 144 buổi, 4 lần đo sóng não, coaching 1:1 và lớp Parenting, kèm quà tặng trị giá 12 triệu. {goi} chọn bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
-          mmh11: 'Dạ {xung} gửi {goi} báo giá Memohack 1:1 (12.500.000đ): 24 buổi Online 45 phút, học riêng với giáo viên, tặng 12 buổi Offline và Bộ học liệu Memohack Kits. {goi} chọn bé {be} học lịch [A] hay [B] để {xung} xếp giáo viên ạ?',
-          hyper: 'Dạ {xung} gửi {goi} báo giá Hyperhack (13.000.000đ): 60 ngày, 120 buổi Online với Trainer chuyên biệt, tặng khóa ParentHack trị giá 4 triệu cho {goi}. {goi} chọn bé {be} bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
+          mmh12: 'Dạ {xung} gửi {goi} báo giá Memohack 12 tháng cho bé {be}. Giá trị {goi} nhận được: 144 buổi (96 Online và 48 Offline), 4 lần đo sóng não để so với chính bé, coaching 1:1 với chuyên gia, lớp Parenting cho Ba Mẹ và quà tặng trị giá 12 triệu. Học phí 42.500.000đ. {goi} chọn bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
+          mmh11: 'Dạ {xung} gửi {goi} báo giá Memohack 1:1 cho bé {be}. Giá trị {goi} nhận được: 24 buổi Online 1 kèm 1 với giáo viên, mỗi buổi 45 phút theo 4 chặng và 12 chủ đề nhân cách, bài tập quay video gửi Trainer giữa các buổi, bộ học liệu Memohack Kits gửi tận nhà và tặng 12 buổi Offline (không quy đổi ra tiền). Học phí 12.500.000đ. {goi} chọn bé {be} học lịch [A] hay [B] để {xung} xếp giáo viên ạ?',
+          hyper: 'Dạ {xung} gửi {goi} báo giá Hyperhack cho bé {be}. Giá trị {goi} nhận được: 60 ngày, 120 buổi Online, mỗi ngày 2 buổi khoảng 30 phút (sáng tỉnh táo và tập trung, tối thư giãn và ngủ ngon), bộ ba memoKUNGFU, memoEYE, memoSTATE, Trainer chuyên biệt đồng hành và khóa ParentHack trị giá 4 triệu cho {goi}. Học phí 13.000.000đ. {goi} chọn bé {be} bắt đầu từ [ngày A] hay [ngày B] để {xung} giữ chỗ ạ?',
         } },
       { id: '5.2', title: 'Gửi mã QR thanh toán', when: 'Khi Ba Mẹ đồng ý',
         text: 'Dạ {xung} gửi {goi} mã QR thanh toán [số tiền]. {goi} chuyển xong nhắn {xung} ảnh biên lai, {xung} báo kế toán xác nhận và giữ chỗ cho bé {be} ạ.' },
@@ -181,7 +183,9 @@ const PIPELINE_RAW = [
 ];
 
 // Mỗi bước gồm câu hỏi và cách trả lời (qa) rồi tin nhắn mẫu (items)
-export const PIPELINE = PIPELINE_RAW.map((st) => ({ ...st, qa: PIPELINE_QA[st.n] ?? [] }));
+// Bước 3B (Trial 1:1 Online và giao tiếp cơ bản) nằm giữa bước 3 và bước 4
+const PIPELINE_ALL = [...PIPELINE_RAW.filter((s) => s.n <= 3), TRIAL_STAGE, ...PIPELINE_RAW.filter((s) => s.n > 3)];
+export const PIPELINE = PIPELINE_ALL.map((st) => ({ ...st, qa: st.qa ?? PIPELINE_QA[st.n] ?? [] }));
 
 const NL = String.fromCharCode(10);
 const qaText = (qa) => [qa.q, typeof qa.say === 'string' ? qa.say : Object.values(qa.say).join(NL), ...(qa.points ?? [])].join(NL);

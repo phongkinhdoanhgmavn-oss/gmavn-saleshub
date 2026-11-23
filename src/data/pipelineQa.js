@@ -9,16 +9,16 @@ export const PIPELINE_QA = {
   1: [
     {
       id: '1.q1', who: 'ph', q: 'GMA là gì? Bên mình dạy bé điều gì?',
-      say: 'Dạ GMA Việt Nam là Học viện Trí tuệ Thiên tài, chuyên chương trình Memohack giúp bé rèn trí nhớ, sự tập trung và tự tin khi học. Bé học theo từng bước, có đo sóng não để biết nhịp của bé ở từng thời điểm. {xung} xin phép hỏi {goi} một chút về bé {be} để tư vấn đúng nhu cầu ạ.',
+      say: 'Dạ GMA Việt Nam là Học viện Trí tuệ Thiên tài, chương trình Memohack giúp bé rèn trí nhớ, sự tập trung và tự tin khi học. Bé học theo lộ trình được thiết kế riêng, có đo sóng não để biết năng lực não bộ của bé ở từng thời điểm. {xung} xin phép hỏi {goi} một chút về bé {be} để tư vấn đúng nhu cầu ạ.',
       points: ['Nói đúng 3 từ khóa: trí nhớ, tập trung, tự tin.', 'Đo sóng não là mốc để so với chính bé, không dùng để chẩn đoán.', 'Trả lời ngắn rồi hỏi lại ngay để chuyển sang khai thác nhu cầu.'],
       avoid: 'Không nói "học là giỏi", "tăng IQ", "chữa" bất cứ vấn đề gì của bé.',
       next: 'Bé nhà mình đang học lớp mấy và điều gì {goi} lo nhất ạ?',
     },
     {
       id: '1.q2', who: 'ph', q: 'Học phí bao nhiêu vậy?',
-      say: 'Dạ GMA có 3 chương trình: Memohack 12 tháng 42,5 triệu, Memohack 1:1 trực tuyến 12,5 triệu và Hyperhack 13 triệu. Mỗi chương trình hợp với một nhu cầu khác nhau nên {xung} xin hỏi {goi} vài câu về bé {be} để chọn đúng, tránh {goi} tốn kém không cần thiết ạ.',
-      points: ['Báo giá thật, không né, nhưng chưa đi sâu so sánh khi chưa biết nhu cầu.', 'Giá niêm yết, mọi giảm thêm phải báo Đại ca.', 'Báo giá chưa gồm 8% VAT. Chỉ nói khi khách hỏi hóa đơn.'],
-      avoid: 'Không tự báo giảm giá hay "giá hôm nay".',
+      say: 'Dạ {xung} hiểu {goi} muốn biết học phí. Để {xung} báo đúng, {xung} xin nói qua giá trị trước ạ: GMA có 3 chương trình, mỗi chương trình hợp với một nhu cầu khác nhau. Memohack 12 tháng là lộ trình bài bản cả năm, có đo sóng não theo mốc và lớp Parenting cho Ba Mẹ. Memohack 1:1 là bé học riêng với giáo viên, lịch linh hoạt. Hyperhack là 60 ngày luyện đều mỗi ngày với Trainer chuyên biệt. {goi} cho {xung} hỏi vài câu về bé {be} để chọn đúng chương trình, {xung} sẽ nói kỹ giá trị của chương trình đó rồi mới báo học phí cho {goi} chủ động ạ.',
+      points: ['QUY TẮC BẮT BUỘC: nói giá trị trước, báo giá sau. Không nêu học phí ở câu đầu.', 'Chỉ báo học phí khi đã biết nhu cầu và đã nói chi tiết giá trị của khóa phù hợp (xem 5.1).', 'Giá niêm yết, mọi giảm thêm phải báo Đại ca.', 'Báo giá chưa gồm 8% VAT. Chỉ nói khi khách hỏi hóa đơn.'],
+      avoid: 'Không chia sẻ giá ngay lập tức. Không tự báo giảm giá hay "giá hôm nay".',
       next: 'Bé nhà mình đang học lớp mấy ạ? Ở nhà bé học thế nào?',
     },
     {
@@ -45,13 +45,13 @@ export const PIPELINE_QA = {
     },
     {
       id: '1.q6', who: 'ph', q: 'Có học thử không?',
-      say: 'Dạ có ạ. GMA có buổi Trial kèm đo sóng não 90 phút, giá gốc 900.000đ nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} cho {xung} xin ngày bé rảnh để {xung} giữ chỗ ạ.',
-      points: ['Số suất đổi theo thời gian, nhập số đúng trong phần thông tin điền sẵn.', 'Chỉ nói "miễn phí" khi khách đăng ký qua Sales.'],
+      say: 'Dạ có ạ. Buổi Trial 90 phút gồm đo sóng não EEG 3D cho bé, trải nghiệm lớp MemoSchool, và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa cho bé {be}. Buổi này giá gốc 900.000đ nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} cho {xung} xin ngày bé rảnh để {xung} giữ chỗ ạ.',
+      points: ['Nói giá trị buổi Trial trước, rồi mới nói giá gốc và ưu đãi miễn phí.', 'Số suất đổi theo thời gian, nhập số đúng trong phần thông tin điền sẵn.', 'Chỉ nói "miễn phí" khi khách đăng ký qua Sales.'],
       next: 'Chủ nhật này hoặc [ngày khác] {goi} đưa bé đến được không ạ?',
     },
     {
       id: '1.q7', who: 'cs', q: 'Tin nhắn đầu tiên nên hỏi gì để khách trả lời?',
-      say: 'Chào {goi}, {xung} là {tensales} bên GMA Việt Nam. {xung} thấy {goi} vừa quan tâm chương trình trí nhớ và tập trung cho bé. {goi} cho {xung} hỏi nhanh: bé {be} đang học lớp mấy, và điều {goi} đang lo nhất ở bé là gì ạ?',
+      say: 'Chào {goi}, {xung} là {tensales} bên GMA Việt Nam. {xung} thấy {goi} vừa quan tâm chương trình trí nhớ và tập trung cho bé. {goi} cho {xung} hỏi nhanh: bé {be} đang học lớp mấy ạ?',
       points: ['Chỉ 2 câu hỏi, dễ trả lời, không dài.', 'Gọi bằng tên, nhắc đúng điều khách đã quan tâm.', 'Gọi điện trong 10 phút nếu có số.'],
       avoid: 'Không gửi bảng giá hoặc video dài ở tin đầu.',
     },
@@ -64,13 +64,13 @@ export const PIPELINE_QA = {
     },
     {
       id: '1.q9', who: 'ph', q: 'Memohack là gì? "Học mà chơi" nghĩa là sao?',
-      say: 'Dạ Memohack là phương pháp huấn luyện não bộ độc quyền của GMA cho bé từ 5 đến 15 tuổi. Bé học qua trải nghiệm "học mà chơi": bài Brain Gym vận động, game trí tuệ, kỹ thuật nhớ bằng hình ảnh (màn hình tâm trí) và nhạc sóng não để cân bằng hai bán cầu não. Mục tiêu là bé tiếp nhận thông tin bằng cả 6 giác quan tự nhiên nên việc học nhẹ nhàng và hứng thú hơn. Mỗi bé một nhịp riêng nên đây là mục tiêu luyện tập, không phải cam kết kết quả ạ.',
+      say: 'Dạ Memohack là phương pháp huấn luyện não bộ độc quyền của GMA cho bé từ 5 đến 15 tuổi. Bé học qua trải nghiệm "học mà chơi": bài Brain Gym vận động, game trí tuệ, kỹ thuật nhớ bằng hình ảnh (màn hình tâm trí) và nhạc sóng não để cân bằng hai bán cầu não. Mục tiêu là bé tiếp nhận thông tin bằng cả 6 giác quan tự nhiên, phát triển trí nhớ tốt để việc học nhẹ nhàng và hứng thú hơn.',
       points: ['3 nền tảng: đo sóng não Neuro Harmony M, nhạc sóng não độc quyền, Brain Gym và Bal-A-Vis-X.', '6 năng lực: ghi nhớ, tập trung, cảm xúc, khả năng hiểu, tiếp nhận thông tin, sự tự tin.', 'Các bài tập tên riêng: MemoDance, MemoEye, MemoStand, MemoKungfu, MemoState.', 'Hình 6 giác quan và công thức chuyển hóa có trong Kho > Phương pháp & điểm khác biệt.'],
       avoid: 'Không nói "chữa", không hứa kết quả theo thời gian.',
     },
     {
       id: '1.q10', who: 'ph', q: 'GMA là ai, có đáng tin không?',
-      say: 'Dạ GMA là viết tắt của Genius Mind Academy, hình thành từ năm 2005 do nhóm nhà giáo dục của Tiến sĩ David Ting dẫn đầu tại Malaysia, với hơn 20 năm nghiên cứu về não bộ. GMA Việt Nam là đơn vị độc quyền triển khai chương trình tại Việt Nam, có 2 cơ sở ở Hà Đông và Cầu Giấy. {goi} cứ đến trực tiếp buổi Trial để xem thiết bị, lớp học và gặp chuyên gia ạ.',
+      say: 'Dạ GMA là viết tắt của Genius Mind Academy, hình thành từ năm 2005 do nhà giáo dục Tiến sĩ David Ting nghiên cứu và phát triển tại Malaysia, với hơn 20 năm nghiên cứu về não bộ. GMA Việt Nam là đơn vị độc quyền triển khai chương trình tại Việt Nam, có 2 cơ sở ở Hà Đông và Cầu Giấy. {goi} cứ đến trực tiếp buổi Trial để xem thiết bị, lớp học và gặp chuyên gia ạ.',
       points: ['Thông tin lấy từ website GMA (trang Về chúng tôi).', 'Cơ sở 1: NO24 LK829 Khu đất dịch vụ Bờ Hội, La Khê, Hà Đông (đối diện số 10 Ngô Đình Mẫn). Cơ sở 2: Số 21 Trần Kim Xuyến, Yên Hòa, Cầu Giấy. Hotline 0981 586 907.', 'Cách tốt nhất tạo niềm tin: mời xem trực tiếp ở buổi Trial.'],
       avoid: 'Không nêu giải thưởng, chứng nhận hay con số chưa kiểm chứng.',
     },
@@ -139,8 +139,8 @@ export const PIPELINE_QA = {
   3: [
     {
       id: '3.q1', who: 'ph', q: 'Trial có mất phí không?',
-      say: 'Dạ buổi Trial kèm đo sóng não giá gốc là 900.000đ. {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất nên {xung} xin giữ chỗ cho bé {be} sớm ạ.',
-      points: ['Đúng sự thật: 900.000đ, miễn phí khi đăng ký qua Sales, số suất có hạn.', 'Cập nhật số suất mỗi ngày trong phần thông tin điền sẵn.'],
+      say: 'Dạ buổi Trial 90 phút gồm đo sóng não EEG 3D, trải nghiệm lớp MemoSchool và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa, giá gốc 900.000đ. {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất nên {xung} xin giữ chỗ cho bé {be} sớm ạ.',
+      points: ['Nói giá trị buổi Trial trước rồi mới nói giá. Đúng sự thật: 900.000đ, miễn phí khi đăng ký qua Sales, số suất có hạn.', 'Cập nhật số suất mỗi ngày trong phần thông tin điền sẵn.'],
       avoid: 'Không nói miễn phí khi khách tự đến không qua Sales.',
     },
     {
@@ -292,11 +292,11 @@ export const PIPELINE_QA = {
     {
       id: '5.q2', who: 'ph', q: 'Đắt quá!',
       say: {
-        mmh12: 'Dạ {xung} hiểu {goi} cân nhắc, đây là khoản đầu tư lớn ạ. {xung} tính giúp {goi}: Memohack 12 tháng 42,5 triệu cho 144 buổi, tương đương khoảng 116.000đ mỗi ngày trong cả năm, chưa kể bé có 4 lần đo sóng não, coaching 1:1 và {goi} có lớp Parenting, kèm quà tặng trị giá 12 triệu. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
-        mmh11: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} tính giúp {goi}: gói 1:1 12,5 triệu cho 24 buổi, tương đương khoảng 520.000đ mỗi buổi 45 phút học riêng với giáo viên, kèm 12 buổi Offline tặng và Bộ học liệu Memohack Kits. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
-        hyper: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} tính giúp {goi}: Hyperhack 13 triệu cho 120 buổi trong 60 ngày, tương đương khoảng 108.000đ mỗi buổi, bé luyện đều với Trainer chuyên biệt tại nhà. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
+        mmh12: 'Dạ {xung} hiểu {goi} cân nhắc, đây là khoản đầu tư lớn ạ. {xung} xin nhắc lại giá trị bé {be} và {goi} nhận được: 144 buổi (96 Online và 48 Offline), 4 lần đo sóng não trong năm để so với chính bé, coaching 1:1 với chuyên gia, lớp Parenting để {goi} đồng hành, cùng quà tặng trị giá 12 triệu (khóa ParentHack, báo cáo sóng não chuyên sâu, Bộ học liệu Memohack Kits). Học phí 42,5 triệu cho cả hành trình này, tương đương khoảng 116.000đ mỗi ngày trong cả năm. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
+        mmh11: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} xin nhắc lại giá trị bé {be} nhận được: 24 buổi học riêng với giáo viên, mỗi buổi 45 phút gồm học nhân cách, game trí tuệ và kỹ thuật Memo, Brainwave luyện sóng não, luyện skill, có bài tập quay video gửi Trainer giữa các buổi, bộ học liệu gửi tận nhà và tặng 12 buổi Offline (không quy đổi ra tiền). Học phí 12,5 triệu, tương đương khoảng 520.000đ mỗi buổi 45 phút. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
+        hyper: 'Dạ {xung} hiểu {goi} cân nhắc. {xung} xin nhắc lại giá trị bé {be} nhận được: 120 buổi trong 60 ngày, mỗi ngày 2 buổi khoảng 30 phút (sáng giúp bé tỉnh táo và tập trung, tối giúp bé thư giãn và ngủ ngon), bộ ba bài tập memoKUNGFU, memoEYE, memoSTATE, Trainer chuyên biệt đồng hành, cùng khóa ParentHack trị giá 4 triệu cho {goi}. Học phí 13 triệu, tương đương khoảng 108.000đ mỗi buổi. Nếu {goi} muốn chia nhỏ, {xung} hỗ trợ trả góp qua thẻ ạ.',
       },
-      points: ['Đồng cảm, rồi chia nhỏ giá trị thành đơn vị mỗi ngày hoặc mỗi buổi.', 'Nhắc lại điều phụ huynh lo ở bước 2 và gắn vào giá trị.', 'Có trả góp thẻ làm phương án chia nhỏ.'],
+      points: ['Đồng cảm, nhắc lại giá trị trước, rồi mới nói học phí và chia nhỏ thành mỗi ngày hoặc mỗi buổi.', 'Nhắc lại điều phụ huynh lo ở bước 2 và gắn vào giá trị.', 'Có trả góp thẻ làm phương án chia nhỏ.'],
       avoid: 'Không tự giảm giá. Không so sánh "đắt hơn học thêm bình thường".',
       next: 'Điều {goi} thấy chưa hợp lý nhất là học phí hay là thời gian ạ?',
     },
