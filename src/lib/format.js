@@ -35,3 +35,10 @@ export function isValidDate(s) {
   const dt = new Date(y, mo - 1, d);
   return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d;
 }
+
+/** "29/11/2026" -> "Chủ nhật" (rỗng nếu ngày chưa hợp lệ) */
+export function weekdayOf(s) {
+  if (!isValidDate(s)) return '';
+  const [d, m, y] = s.split('/').map(Number);
+  return WEEKDAYS[new Date(y, m - 1, d).getDay()];
+}

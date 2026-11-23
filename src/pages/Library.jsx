@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronDown, TriangleAlert, Copy, ExternalLink, Check, RotateCcw, ArrowRight, X, BookOpen } from 'lucide-react';
+import { ChevronDown, TriangleAlert, Copy, ExternalLink, Check, RotateCcw, ArrowRight, X, BookOpen, ChevronsUpDown, ChevronsDownUp, Package, Target, PackageCheck, ShieldAlert, Link2 } from 'lucide-react';
 import { LIBRARY } from '../data';
 import { GROUPS, GOLDEN_RULES, HANDOFF_FLOWS, LINKS } from '../data/artifactKnowledge';
 import Objections from './Objections';
@@ -146,6 +146,15 @@ function LinkList() {
   );
 }
 
+// Màu và biểu tượng của từng nhóm lớn, để nhìn là nhận ra
+const GROUP_UI = {
+  sp: { icon: Package, head: 'bg-cam-soft text-cam-dark', ring: 'border-cam/60' },
+  ban: { icon: Target, head: 'bg-cara text-kem', ring: 'border-cara' },
+  sau: { icon: PackageCheck, head: 'bg-[#dff3e7] text-[#0d7a3d]', ring: 'border-ok/60' },
+  luat: { icon: ShieldAlert, head: 'bg-[#fdecee] text-bad', ring: 'border-bad/50' },
+  lk: { icon: Link2, head: 'bg-kem-deep text-cara', ring: 'border-nau-soft' },
+};
+
 export default function Library() {
   const [params] = useSearchParams();
   const copy = useCopy();
@@ -161,8 +170,56 @@ export default function Library() {
   const current = LIBRARY.find((s) => s.id === sid) ?? LIBRARY[0];
   const Icon = current.icon;
   const byGroup = useMemo(() => GROUPS.map((g) => ({ ...g, items: LIBRARY.filter((s) => s.group === g.id) })).filter((g) => g.items.length), []);
-  const pick = (id) => { setSid(id); setOpenH(0); };
   const activeGroup = byGroup.find((g) => g.id === current.group) ?? byGroup[0];
+  // Nhóm lớn có nút thu phóng. Vào Kho là thu gọn hết; điện thoại tự thu gọn lại sau khi chọn mục.
+  const [openP, setOpenP] = useState([]);
+  const [openD, setOpenD] = useState([]);
+  const pick = (id, phone) => { setSid(id); setOpenH(0); if (phone) setOpenP([]); };
+  const toggle = (set) => (gid) => set((o) => (o.includes(gid) ? o.filter((x) => x !== gid) : [...o, gid]));
+  const allIds = byGroup.map((g) => g.id);
+
+  const renderGroups = (open, setOpen, phone) => (
+    <div className="space-y-2.5">
+      <button onClick={() => setOpen(open.length === allIds.length ? [] : allIds)}
+        className="w-full h-12 rounded-2xl bg-cam text-white font-bold inline-flex items-center justify-center gap-2 shadow-card active:bg-cam-dark">
+        {open.length === allIds.length ? <><ChevronsDownUp className="w-5 h-5" /> Thu gọn tất cả</> : <><ChevronsUpDown className="w-5 h-5" /> Mở tất cả</>}
+      </button>
+      {byGroup.map((g) => {
+        const ui = GROUP_UI[g.id] ?? GROUP_UI.lk;
+        const GI = ui.icon;
+        const isOpen = open.includes(g.id);
+        const isActive = g.id === current.group;
+        return (
+          <div key={g.id} className={`rounded-2xl border-2 bg-white overflow-hidden ${isActive ? ui.ring : 'border-kem-deep'}`}>
+            <button onClick={() => toggle(setOpen)(g.id)} aria-expanded={isOpen}
+              className={`w-full min-h-14 px-3.5 py-2 flex items-center gap-3 text-left ${ui.head}`}>
+              <GI className="w-6 h-6 shrink-0" />
+              <span className="flex-1 min-w-0">
+                <span className="block font-heading font-extrabold leading-tight">{g.title}</span>
+                {!isOpen && isActive && <span className="block text-xs font-semibold opacity-80 truncate">Đang xem: {current.title}</span>}
+              </span>
+              <span className="text-xs font-bold rounded-full bg-white/60 px-2 py-0.5">{g.items.length}</span>
+              <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+              <div className={`p-1.5 ${phone ? 'grid sm:grid-cols-2 gap-1' : 'space-y-1'}`}>
+                {g.items.map((s) => {
+                  const I = s.icon;
+                  const on = s.id === current.id;
+                  return (
+                    <button key={s.id} onClick={() => pick(s.id, phone)} aria-current={on ? 'page' : undefined}
+                      className={`w-full text-left rounded-xl px-3 min-h-11 py-2 flex items-center gap-2.5 text-sm font-semibold transition-colors ${on ? 'bg-cam text-white' : 'text-cara hover:bg-kem-deep'}`}>
+                      <I className="w-[18px] h-[18px] shrink-0" /> <span>{s.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
   // Nội dung chữ (thu phóng) chỉ hiện khi mục không có giao diện riêng
   const hasCustomUI = ['gscale', 'handoff', 'rules', 'links'].includes(current.kind) || current.special;
 
@@ -171,49 +228,12 @@ export default function Library() {
       <PageHeader title="Kho kiến thức" sub="Mọi thứ Sales cần, chia theo nhóm: sản phẩm, bán hàng, sau khi chốt, quy tắc, liên kết." />
 
       <div className="lg:grid lg:grid-cols-[230px_1fr] lg:gap-6 lg:items-start">
-        {/* Điện thoại và máy tính bảng: tab nhóm rồi tới mục trong nhóm */}
-        <div className="lg:hidden space-y-2">
-          <div className="-mx-4 px-4 flex gap-2 overflow-x-auto no-scrollbar" role="tablist" aria-label="Nhóm kiến thức">
-            {byGroup.map((g) => (
-              <button key={g.id} role="tab" aria-selected={g.id === activeGroup.id} onClick={() => pick(g.items[0].id)}
-                className={`shrink-0 h-11 px-4 rounded-full text-sm font-bold border ${g.id === activeGroup.id ? 'bg-cara text-kem border-cara' : 'bg-white text-cara border-kem-deep'}`}>
-                {g.title}
-              </button>
-            ))}
-          </div>
-          <div className="-mx-4 px-4 flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            {activeGroup.items.map((s) => {
-              const I = s.icon;
-              const on = s.id === current.id;
-              return (
-                <button key={s.id} onClick={() => pick(s.id)} aria-pressed={on}
-                  className={`shrink-0 h-11 px-3.5 rounded-xl flex items-center gap-2 border text-sm font-semibold ${on ? 'bg-cam text-white border-cam' : 'bg-white border-kem-deep'}`}>
-                  <I className="w-[18px] h-[18px] shrink-0" /> <span className="whitespace-nowrap">{s.title}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Điện thoại và máy tính bảng */}
+        <div className="lg:hidden">{renderGroups(openP, setOpenP, true)}</div>
 
         {/* Máy tính: danh sách chia nhóm bên trái */}
-        <nav className="hidden lg:block lg:sticky lg:top-6 space-y-4" aria-label="Mục kiến thức">
-          {byGroup.map((g) => (
-            <div key={g.id}>
-              <p className="px-1 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-nau">{g.title}</p>
-              <div className="space-y-1">
-                {g.items.map((s) => {
-                  const I = s.icon;
-                  const on = s.id === current.id;
-                  return (
-                    <button key={s.id} onClick={() => pick(s.id)} aria-current={on ? 'page' : undefined}
-                      className={`w-full text-left rounded-xl px-3 min-h-11 py-2 flex items-center gap-2.5 text-sm font-semibold transition-colors ${on ? 'bg-cara text-kem' : 'text-cara hover:bg-kem-deep'}`}>
-                      <I className="w-[18px] h-[18px] shrink-0" /> <span>{s.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+        <nav className="hidden lg:block lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto" aria-label="Mục kiến thức">
+          {renderGroups(openD, setOpenD, false)}
         </nav>
 
         <section className="mt-4 lg:mt-0 min-w-0">
