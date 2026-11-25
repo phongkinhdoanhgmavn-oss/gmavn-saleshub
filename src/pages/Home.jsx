@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Search, Target, Calculator, MessageSquareText, BookOpen, ArrowRight, Gift, Phone, MapPin, Clock } from 'lucide-react';
+import { Search, Target, Calculator, MessageSquareText, BookOpen, ArrowRight, Gift, Phone, MapPin, Clock, Lock } from 'lucide-react';
 import { CONTACT, PROMOS } from '../config';
 import { dateLabelVN } from '../lib/format';
 import { kpiSummary, BAR_MAX, MARKS } from '../lib/kpi';
@@ -63,6 +63,15 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        {/* Khu của Đại ca: màu riêng, vào phải nhập mã */}
+        <Link to="/quan-ly" className="group mt-3 flex items-center gap-4 rounded-2xl p-4 border border-kb-dark bg-kb text-white shadow-card hover:bg-kb-dark transition-colors">
+          <span className="h-12 w-12 rounded-xl grid place-items-center shrink-0 bg-white/20"><Lock className="w-6 h-6" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-heading font-bold leading-snug">Khu Đại ca</span>
+            <span className="block text-xs sm:text-sm mt-0.5 text-white/90">Đề nghị thanh toán, đối soát hoa hồng. Cần mã để vào</span>
+          </span>
+          <ArrowRight className="hidden sm:block w-5 h-5 opacity-60 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
       </section>
 
       {/* KPI tháng này: số liệu Sales nhập ở trang KPI */}

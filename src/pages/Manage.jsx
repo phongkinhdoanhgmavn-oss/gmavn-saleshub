@@ -12,7 +12,6 @@ const lbl = 'text-sm font-semibold';
 
 function Gate({ onOk }) {
   const [code, setCode] = useState('');
-  const [remember, setRemember] = useState(true);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -20,7 +19,7 @@ function Gate({ onOk }) {
     e.preventDefault();
     if (!code.trim()) return;
     setBusy(true);
-    const r = await tryUnlock(code, remember);
+    const r = await tryUnlock(code, false); // luôn hỏi mã mỗi lần vào, không nhớ máy
     setBusy(false);
     if (r === 'ok') return onOk();
     setCode('');
@@ -35,17 +34,13 @@ function Gate({ onOk }) {
     <div className="max-w-sm mx-auto mt-10">
       <Card className="p-6">
         <span className="h-12 w-12 rounded-xl bg-cam-soft text-cam-dark grid place-items-center"><Lock className="w-6 h-6" /></span>
-        <h1 className="font-heading font-extrabold text-2xl mt-4">Khu Quản lý</h1>
-        <p className="text-nau text-sm mt-1">Dành cho Trưởng phòng. Nhập mã để mở.</p>
+        <h1 className="font-heading font-extrabold text-2xl mt-4">Khu Đại ca</h1>
+        <p className="text-nau text-sm mt-1">Dành cho Đại ca, xin các em á</p>
         <form onSubmit={submit} className="mt-4 space-y-3">
           <input
             className="field text-lg tracking-widest font-bold uppercase" type="password" autoComplete="off" autoFocus
             value={code} onChange={(e) => { setCode(e.target.value); setMsg(''); }} placeholder="Mã quản lý" aria-label="Mã quản lý"
           />
-          <label className="flex items-center gap-2 text-sm text-nau">
-            <input type="checkbox" className="h-4 w-4 accent-[#eb7c16]" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-            Nhớ máy này 7 ngày
-          </label>
           {msg && <p className="text-sm text-bad">{msg}</p>}
           <button className="btn-primary w-full h-12" disabled={busy}>{busy ? 'Đang kiểm tra...' : 'Mở khóa'}</button>
         </form>

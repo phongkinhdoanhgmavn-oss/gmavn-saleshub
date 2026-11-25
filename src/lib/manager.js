@@ -23,12 +23,11 @@ async function derive(code) {
 
 /** Đã mở khóa chưa (còn hạn và còn đúng mã hiện tại; đổi mã thì mọi máy phải nhập lại). */
 export function isUnlocked() {
-  for (const store of [sessionStorage, localStorage]) {
-    try {
-      const v = JSON.parse(store.getItem(OK_KEY) || 'null');
-      if (v && v.h === MANAGER_CODE.hash && v.exp > Date.now()) return true;
-    } catch { /* bỏ qua */ }
-  }
+  try { localStorage.removeItem(OK_KEY); } catch { /* bỏ qua */ } // bỏ bản "nhớ máy" của phiên bản cũ: nay luôn hỏi mã mỗi lần vào
+  try {
+    const v = JSON.parse(sessionStorage.getItem(OK_KEY) || 'null');
+    if (v && v.h === MANAGER_CODE.hash && v.exp > Date.now()) return true;
+  } catch { /* bỏ qua */ }
   return false;
 }
 
