@@ -11,12 +11,12 @@ export const TRIAL_STAGE = {
     "msg": "Lời thoại và mẫu"
   },
   "notes": [
-    "Xưng hô: xưng “Cô” (hoặc “Thầy”), không xưng “em”, “mình” hay “cháu”. Gọi phụ huynh là “Ba/Mẹ [tên]”; gọi bé bằng tên hoặc “con”. Dùng “Trainer”, không dùng “chuyên gia”.",
+    "Xưng hô: xưng “Cô” (hoặc “Thầy”), không xưng “em”, “mình” hay “cháu”. Gọi phụ huynh là “Ba/Mẹ [tên]”; gọi bé bằng tên hoặc “con”. Người dẫn buổi Trial Online là Trainer. Trainer và chuyên gia là hai vị trí khác nhau, không gọi lẫn.",
     "Mỗi lượt hỏi 1 câu mở, tối đa 2. Không hỏi dồn.",
     "Nói điểm sáng của bé trước, điểm cần rèn sau. Gọi vấn đề là “phần con cần rèn thêm”, không gán nhãn “kém” hay “yếu”.",
     "Không cam kết kết quả. Dùng “thường thấy”, “nhiều bạn”, “khi luyện đều”.",
     "Quy tắc giá: nói chi tiết giá trị trước, báo học phí sau. Không báo giá trong buổi Trial nếu chưa nói xong giá trị.",
-    "Cần xác nhận: thời lượng Trial Online 1:1 (file ghi 45 phút, tin 3.1 ghi 90 phút) và giờ trống buổi tối thứ năm, thứ sáu."
+    "Trial Online 1:1 dài 45 phút (đã chốt). Giờ trống buổi tối của Trainer: xem lịch rồi mới hẹn, không báo sẵn thứ."
   ],
   "items": [
     {
@@ -154,7 +154,7 @@ export const TRIAL_STAGE = {
     {
       "id": "T7.10",
       "title": "Mời Trial Online 1:1 (lead đã đăng ký trước nhưng chưa tham gia được)",
-      "text": "Đợt này GMA có thêm hình thức học thử trải nghiệm Online 45 phút, 1 kèm 1 với Trainer vào buổi tối trong tuần. {goi} tham gia cùng bé trong lúc học, cuối buổi được nghe nhận xét và lời khuyên trực tiếp từ Trainer. Hiện {xung} còn trống lịch [thứ năm, thứ sáu]. Mình tham gia được buổi nào ạ?"
+      "text": "Đợt này GMA có thêm hình thức học thử trải nghiệm Online 45 phút, 1 kèm 1 với Trainer vào buổi tối trong tuần. {goi} tham gia cùng bé trong lúc học, cuối buổi được nghe nhận xét và lời khuyên trực tiếp từ Trainer. Hiện {xung} còn trống lịch [ngày giờ còn trống, xem lịch Trainer]. Mình tham gia được buổi nào ạ?"
     },
     {
       "id": "T7.11",

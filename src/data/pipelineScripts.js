@@ -15,7 +15,7 @@ export const COURSES = [
 export const QUOTE_TO_COURSE = { memohack: 'mmh12', memohack_3t_1v1: 'mmh11', hyperhack: 'hyper' };
 
 export const QUICK_FACTS = [
-  'Trial + Đo sóng não: 90 phút. Giá 900.000đ, đăng ký qua Sales thì miễn phí (còn {suat} suất).',
+  'Trial + Đo sóng não: Offline 90 phút, Online 1:1 45 phút. Giá 900.000đ, đăng ký qua Sales thì miễn phí (còn {suat} suất).',
   'Memohack 12 tháng và Hyperhack: Trial Offline vào Chủ nhật, tại cơ sở Hà Đông hoặc Cầu Giấy.',
   'Memohack 1:1 trực tuyến: Trial Online.',
   'Mốc đo sóng não: đo ban đầu (ở Trial) và đo lại sau 3 tháng. Memohack 12 tháng đo 4 lần trong năm (website ghi tháng 1, 3, 6, 12, tài liệu đào tạo ghi tháng 3, 6, 9, 12, chờ anh chốt).',
@@ -66,7 +66,7 @@ const PIPELINE_RAW = [
       { id: '2.4', title: 'Câu mời Trial và đo sóng não', when: 'Cuối cuộc gọi hoặc nhắn Zalo',
         byCourse: {
           mmh12: 'GMA có buổi Trial 90 phút vào Chủ nhật tại cơ sở {coso}: bé đo sóng não EEG 3D, trải nghiệm lớp MemoSchool, còn {goi} nghe chuyên gia đọc kết quả 1-1 và nhận báo cáo sóng não cá nhân hóa. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
-          mmh11: 'GMA có buổi Trial Online 90 phút: bé được đo sóng não và trải nghiệm cách học, còn {goi} nghe chuyên gia đọc kết quả 1-1. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} tiện {ngay} lúc {gio} không ạ để {xung} xếp lịch cho bé {be}?',
+          mmh11: 'GMA có buổi Trial Online 45 phút, học 1 kèm 1 với Trainer: bé trải nghiệm cùng Trainer khoảng 30 phút, 15 phút cuối Trainer nhận xét cụ thể về bé cho {goi}, còn {goi} ngồi cạnh quan sát con. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} tiện {ngay} lúc [giờ] không ạ để {xung} xếp lịch cho bé {be}?',
           hyper: 'GMA có buổi Trial 90 phút vào Chủ nhật tại cơ sở {coso}: bé đo sóng não EEG 3D, trải nghiệm lớp MemoSchool, còn {goi} nghe chuyên gia đọc kết quả 1-1 và nhận báo cáo sóng não cá nhân hóa. Giá gốc 900.000đ, nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {xung} giữ chỗ cho bé {be} vào {ngay} nhé ạ?',
         } },
     ],
@@ -79,7 +79,7 @@ const PIPELINE_RAW = [
         link: { to: '/tin-soan?tpl=trial', label: 'Mở mẫu xác nhận Trial Offline' },
         byCourse: {
           mmh12: 'Dùng mẫu "Xác nhận Phụ huynh tới Trial Offline" trong Tin soạn sẵn. Mẫu tự điền địa điểm, link bản đồ, giờ kết thúc và giờ đến.',
-          mmh11: '{xung} xác nhận lịch Trial Online cho bé {be}: {ngay}, {gio} (90 phút). Link tham gia: [link]. {goi} vào sớm 10 phút (lúc {gioden}) và để bé ngồi nơi yên tĩnh, có màn hình rõ nhé ạ.',
+          mmh11: '{xung} xác nhận lịch Trial Online cho bé {be}: {ngay}, lúc [giờ bắt đầu], kéo dài 45 phút. Link tham gia: [link]. {goi} vào sớm 10 phút (lúc {gioden}) và để bé ngồi nơi yên tĩnh, có màn hình rõ nhé ạ.',
           hyper: 'Dùng mẫu "Xác nhận Phụ huynh tới Trial Offline" trong Tin soạn sẵn. Mẫu tự điền địa điểm, link bản đồ, giờ kết thúc và giờ đến.',
         } },
       { id: '3.2', title: 'Nhắc lịch', when: 'Hôm trước và sáng hôm đó',

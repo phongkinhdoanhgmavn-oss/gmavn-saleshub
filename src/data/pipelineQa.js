@@ -45,7 +45,7 @@ export const PIPELINE_QA = {
     },
     {
       id: '1.q6', who: 'ph', q: 'Có học thử không?',
-      say: 'Dạ có ạ. Buổi Trial 90 phút gồm đo sóng não EEG 3D cho bé, trải nghiệm lớp MemoSchool, và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa cho bé {be}. Buổi này giá gốc 900.000đ nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} cho {xung} xin ngày bé rảnh để {xung} giữ chỗ ạ.',
+      say: 'Dạ có ạ. Buổi Trial (Offline 90 phút, Online 1:1 45 phút) gồm đo sóng não EEG 3D cho bé, trải nghiệm lớp MemoSchool, và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa cho bé {be}. Buổi này giá gốc 900.000đ nhưng {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất. {goi} cho {xung} xin ngày bé rảnh để {xung} giữ chỗ ạ.',
       points: ['Nói giá trị buổi Trial trước, rồi mới nói giá gốc và ưu đãi miễn phí.', 'Số suất đổi theo thời gian, nhập số đúng trong phần thông tin điền sẵn.', 'Chỉ nói "miễn phí" khi khách đăng ký qua Sales.'],
       next: 'Chủ nhật này hoặc [ngày khác] {goi} đưa bé đến được không ạ?',
     },
@@ -139,7 +139,7 @@ export const PIPELINE_QA = {
   3: [
     {
       id: '3.q1', who: 'ph', q: 'Trial có mất phí không?',
-      say: 'Dạ buổi Trial 90 phút gồm đo sóng não EEG 3D, trải nghiệm lớp MemoSchool và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa, giá gốc 900.000đ. {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất nên {xung} xin giữ chỗ cho bé {be} sớm ạ.',
+      say: 'Dạ buổi Trial (Offline 90 phút, Online 1:1 45 phút) gồm đo sóng não EEG 3D, trải nghiệm lớp MemoSchool và chuyên gia đọc kết quả 1-1 cho {goi}, kèm báo cáo sóng não cá nhân hóa, giá gốc 900.000đ. {goi} đăng ký qua {xung} thì được miễn phí, hiện còn {suat} suất nên {xung} xin giữ chỗ cho bé {be} sớm ạ.',
       points: ['Nói giá trị buổi Trial trước rồi mới nói giá. Đúng sự thật: 900.000đ, miễn phí khi đăng ký qua Sales, số suất có hạn.', 'Cập nhật số suất mỗi ngày trong phần thông tin điền sẵn.'],
       avoid: 'Không nói miễn phí khi khách tự đến không qua Sales.',
     },
@@ -147,7 +147,7 @@ export const PIPELINE_QA = {
       id: '3.q2', who: 'ph', q: 'Trial diễn ra bao lâu, ở đâu, cần chuẩn bị gì?',
       say: {
         mmh12: 'Dạ buổi Trial kéo dài 90 phút vào Chủ nhật, tại cơ sở {coso} (Hà Đông hoặc Cầu Giấy). {goi} và bé có mặt sớm 10 phút, bé ăn nhẹ và ngủ đủ giấc để buổi đo thoải mái ạ.',
-        mmh11: 'Dạ buổi Trial Online kéo dài 90 phút. {goi} cho bé ngồi nơi yên tĩnh, màn hình rõ, vào sớm 10 phút. Bé ăn nhẹ và ngủ đủ giấc để buổi đo thoải mái ạ.',
+        mmh11: 'Dạ buổi Trial Online 1:1 kéo dài 45 phút, bé trải nghiệm cùng Trainer khoảng 30 phút rồi 15 phút cuối Trainer nhận xét cho {goi}. {goi} cho bé ngồi nơi yên tĩnh, màn hình rõ, vào sớm 10 phút. Bé ăn nhẹ và ngủ đủ giấc để buổi đo thoải mái ạ.',
         hyper: 'Dạ buổi Trial kéo dài 90 phút vào Chủ nhật, tại cơ sở {coso} (Hà Đông hoặc Cầu Giấy). {goi} và bé có mặt sớm 10 phút, bé ăn nhẹ và ngủ đủ giấc để buổi đo thoải mái ạ.',
       },
       points: ['Địa chỉ và bản đồ có trong mẫu "Xác nhận Phụ huynh tới Trial Offline" ở Tin soạn sẵn.', 'Nhắc lịch hôm trước và sáng hôm đó.'],
@@ -195,7 +195,7 @@ export const PIPELINE_QA = {
       id: '3.q10', who: 'ph', q: 'Buổi Trial 90 phút gồm những gì? Ba Mẹ nhận được gì?',
       say: 'Dạ buổi 90 phút gồm 2 phần. 45 phút đầu bé đo sóng não EEG 3D tại phòng Lab bằng thiết bị cảm biến nhẹ như băng đô. 45 phút sau bé tham gia lớp trải nghiệm MemoSchool, {goi} ngồi cạnh quan sát phản xạ và sự hào hứng của bé. Cuối buổi chuyên gia đọc kết quả 1-1 cho {goi}, và {goi} nhận báo cáo sóng não cá nhân hóa kèm bảng phân tích định hướng giáo dục tại nhà dành riêng cho bé {be} ạ.',
       points: ['Chặng 1 (45 phút): đo sóng não EEG 3D.', 'Chặng 2 (45 phút): trải nghiệm lớp MemoSchool.', 'Quà kèm: báo cáo sóng não cá nhân hóa và bảng phân tích định hướng giáo dục tại nhà.', 'Sau buổi đo, chuyên gia tư vấn lộ trình phù hợp, Ba Mẹ cân nhắc rồi quyết định.', 'Hơn 700 phụ huynh đã đo sóng não và được tư vấn cá nhân hóa tại GMA VN (theo website).'],
-      verify: 'Mô tả này theo buổi Trial Offline tại trung tâm. Với gói 1:1 Trial Online, Sales hỏi lại Trainer về cách đo và nội dung trước khi nói.',
+      verify: 'Mô tả này theo buổi Trial Offline 90 phút tại trung tâm. Trial Online 1:1 dài 45 phút (30 phút trải nghiệm cùng Trainer, 15 phút nhận xét), xem mục Bước 3B. Sales hỏi lại Trainer về cách đo trước khi nói.',
     },
   ],
 
