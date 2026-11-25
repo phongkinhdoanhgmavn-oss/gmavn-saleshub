@@ -1,6 +1,6 @@
 // Các mẫu giấy để in hoặc lưu PDF: giấy đề nghị thanh toán và 2 bảng đối soát hoa hồng. Mẫu bám theo file Excel và PDF của công ty.
 import { fmtNum, todayVN, maskDate } from '../lib/format';
-import { payTotal, periodLabel, salesCalc, mktCalc } from '../lib/manager';
+import { payTotal, periodLabel, salesCalc, mktCalc, PRODUCTS } from '../lib/manager';
 
 const COMPANY = 'CÔNG TY CỔ PHẦN GIÁO DỤC GMA VIỆT NAM';
 const ADDRESS_1 = 'N024, LK 829 Khu Bờ Hội, Phường La Khê, Quận Hà Đông,';
@@ -181,38 +181,89 @@ export function PayDoc({ s, ed = null }) {
   );
 }
 
-export function SalesDoc({ s }) {
+const decimalOf = (s) => String(s).replace(',', '.').replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+
+// Tiêu đề có ô tháng/năm gõ thẳng được
+function PeriodTitle({ prefix, period, ed }) {
+  return (
+    <h1 className="text-center text-[17px] font-extrabold mt-2 flex items-center justify-center gap-1 flex-wrap">
+      <span>{prefix} THÁNG</span>
+      {ed ? (
+        <span className="inline-flex items-center">
+          <In value={period.m} onChange={(v) => ed.period({ m: Math.min(12, digitsOf(v)) || '' })} className="!w-9 text-center font-extrabold" inputMode="numeric" aria-label="Tháng" />
+          <span>/</span>
+          <In value={period.y} onChange={(v) => ed.period({ y: digitsOf(v) || '' })} className="!w-14 text-center font-extrabold" inputMode="numeric" aria-label="Năm" />
+        </span>
+      ) : <span>{periodLabel(period)}</span>}
+    </h1>
+  );
+}
+
+function Meta({ who, ed }) {
+  const row = (label, key, ph) => (
+    <>
+      <b>{label}</b>
+      {ed ? <In value={who[key]} onChange={(v) => ed.who({ [key]: v })} placeholder={ph} /> : <span>{who[key]}</span>}
+    </>
+  );
+  return (
+    <div className="mt-5 grid grid-cols-[22mm_1fr] gap-y-0.5 text-[11px] items-center">
+      {row('Tên người lập:', 'name', 'Họ và tên')}
+      {row('Vị trí:', 'title', 'Chức danh')}
+      {row('Phòng ban:', 'dept', 'Phòng ban')}
+    </div>
+  );
+}
+
+function comSigns(who, ed) {
+  return [
+    { role: 'Giám đốc', name: who.gd, onName: ed && ((v) => ed.who({ gd: v })) },
+    { role: 'Kế toán', name: who.kt, onName: ed && ((v) => ed.who({ kt: v })) },
+    { role: 'TP. Kinh doanh', name: who.name, onName: ed && ((v) => ed.who({ name: v })) },
+  ];
+}
+
+export function SalesDoc({ s, ed = null }) {
   const { who, period, sales } = s;
   const C = salesCalc(sales);
   const rows = C.rows;
   const pct = Math.round(C.pct * 10000) / 100;
+  const kpiCell = ed
+    ? <In value={money(sales.kpi)} onChange={(v) => ed.sales({ kpi: digitsOf(v) })} className="text-right" inputMode="numeric" />
+    : fmtNum(sales.kpi);
+  const salaryCell = ed
+    ? <In value={money(sales.salary)} onChange={(v) => ed.sales({ salary: digitsOf(v) })} className="text-right" inputMode="numeric" placeholder="0" />
+    : fmtNum(C.salary);
   const sumRows = [
     ['Tổng DT ghi nhận', fmtNum(C.recogTotal), true],
-    ['KPIs', fmtNum(sales.kpi), false],
+    ['KPIs', kpiCell, false, true],
     ['Tỷ lệ hoàn thành', `${String(pct).replace('.', ',')}%`, false],
     [`Hoa hồng ${Math.round(C.rate * 100)}%`, fmtNum(C.comm), false],
     ['Thưởng vượt KPIs', fmtNum(C.bonus), false],
-    ['Lương cơ bản', fmtNum(C.salary), false],
+    ['Lương cơ bản', salaryCell, false, true],
     ['Tổng hoa hồng + Thưởng', fmtNum(C.grand), true],
   ];
+  const cellIn = (i, key, cls = '', props = {}) => (
+    <td className={`${td} ${cls} ${ed ? '!p-0.5' : ''}`}>
+      {ed
+        ? <In value={sales.rows[i][key]} onChange={(v) => ed.srow(i, { [key]: v })} className={cls.includes('text-center') ? 'text-center' : ''} {...props} />
+        : sales.rows[i][key]}
+    </td>
+  );
   return (
     <Sheet>
       <Letterhead />
-      <h1 className="text-center text-[17px] font-extrabold mt-2">BẢNG ĐỐI SOÁT HOA HỒNG PKD THÁNG {periodLabel(period)}</h1>
-      <div className="mt-5 grid grid-cols-[22mm_1fr] gap-y-0.5 text-[11px]">
-        <b>Tên người lập:</b><span>{who.name}</span>
-        <b>Vị trí:</b><span>{who.title}</span>
-        <b>Phòng ban:</b><span>{who.dept}</span>
-      </div>
+      <PeriodTitle prefix="BẢNG ĐỐI SOÁT HOA HỒNG PKD" period={period} ed={ed} />
+      <Meta who={who} ed={ed} />
       <p className="mt-3 text-[11px]">PKD đề xuất bảng đối soát hoa hồng của {who.dept || 'Phòng kinh doanh'} tháng {periodLabel(period)} như sau ạ:</p>
 
       <table className="w-full border-collapse mt-2 text-[11px]">
         <thead>
           <tr>
             <th className={`${th} w-8`}>STT</th>
-            <th className={th}>Sản phẩm</th>
-            <th className={th}>Khách hàng</th>
-            <th className={th}>Nguồn</th>
+            <th className={`${th} w-[27mm]`}>Sản phẩm</th>
+            <th className={`${th} w-[32mm]`}>Khách hàng</th>
+            <th className={`${th} w-[18mm]`}>Nguồn</th>
             <th className={th}>Doanh thu thực tế</th>
             <th className={th}>% Doanh thu ghi nhận</th>
             <th className={th}>Doanh thu ghi nhận<span className="block font-normal text-[9px]">(= thực tế × %)</span></th>
@@ -222,16 +273,33 @@ export function SalesDoc({ s }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.id} className="align-top">
-              <td className={`${td} text-center`}>{i + 1}</td>
-              <td className={td}>{r.product}</td>
-              <td className={td}>{r.customer}</td>
-              <td className={`${td} text-center`}>{r.source}</td>
-              <td className={`${td} text-right`}>{money(r.actual)}</td>
-              <td className={`${td} text-center`}>{r.pct}%</td>
+            <tr key={ed ? i : r.id} className="align-top group">
+              <td className={`${td} text-center relative`}>
+                {i + 1}
+                {ed && rows.length > 1 && (
+                  <button type="button" onClick={() => ed.sdel(i)} title="Xóa đơn này" aria-label={`Xóa đơn ${i + 1}`} className="hidden group-hover:grid absolute inset-0 place-items-center bg-white text-bad font-bold">×</button>
+                )}
+              </td>
+              <td className={`${td} ${ed ? '!p-0.5' : ''}`}>
+                {ed ? (
+                  <select value={r.product} onChange={(e) => ed.srow(i, { product: e.target.value })} className="bg-transparent outline-none w-full rounded-sm hover:bg-cam-soft/70 focus:bg-cam-soft cursor-pointer appearance-none">
+                    {[...PRODUCTS, ...(r.product && !PRODUCTS.includes(r.product) ? [r.product] : [])].map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                ) : r.product}
+              </td>
+              {cellIn(i, 'customer')}
+              {cellIn(i, 'source', 'text-center', { placeholder: 'CS1 - Ads' })}
+              <td className={`${td} text-right ${ed ? '!p-0.5' : ''}`}>
+                {ed ? <In value={money(r.actual)} onChange={(v) => ed.srow(i, { actual: digitsOf(v) })} className="text-right" inputMode="numeric" placeholder="0" /> : money(r.actual)}
+              </td>
+              <td className={`${td} text-center ${ed ? '!p-0.5' : ''}`}>
+                {ed ? (
+                  <span className="flex items-center justify-center"><In value={r.pct} onChange={(v) => ed.srow(i, { pct: decimalOf(v) })} className="!w-10 text-center" inputMode="decimal" />%</span>
+                ) : `${r.pct}%`}
+              </td>
               <td className={`${td} text-right`}>{money(r.recog)}</td>
-              <td className={`${td} text-center`}>{r.sale}</td>
-              <td className={td}>{r.note}</td>
+              {cellIn(i, 'sale', 'text-center')}
+              {cellIn(i, 'note')}
             </tr>
           ))}
           <tr className="font-bold">
@@ -243,35 +311,39 @@ export function SalesDoc({ s }) {
           </tr>
           {/* Khoảng cách rồi tới khối tổng hợp: số nằm thẳng cột "Doanh thu ghi nhận" */}
           <tr aria-hidden="true"><td colSpan={9} className="h-4" /></tr>
-          {sumRows.map(([label, val, strong]) => (
+          {sumRows.map(([label, val, strong, editable]) => (
             <tr key={label}>
               <td colSpan={4} />
               <td className={`${td} font-bold`} colSpan={2}>{label}</td>
-              <td className={`${td} text-right ${strong ? 'font-extrabold text-[12.5px]' : ''}`}>{val}</td>
+              <td className={`${td} text-right ${strong ? 'font-extrabold text-[12.5px]' : ''} ${ed && editable ? '!p-0.5' : ''}`}>{val}</td>
               <td colSpan={2} />
             </tr>
           ))}
         </tbody>
       </table>
+      {ed && <button type="button" onClick={ed.sadd} className="mt-1 text-[11px] font-semibold text-cam-dark hover:underline print:hidden">+ Thêm đơn</button>}
 
-      <Signs cols={[{ role: 'Giám đốc', name: who.gd }, { role: 'Kế toán', name: who.kt }, { role: 'TP. Kinh doanh', name: who.name }]} />
+      <Signs cols={comSigns(who, ed)} />
     </Sheet>
   );
 }
 
-export function MktDoc({ s }) {
+export function MktDoc({ s, ed = null }) {
   const { who, period, mkt } = s;
   const M = mktCalc(mkt);
   const pct = Math.round(M.pct * 10000) / 100;
+  const moneyCell = (key) => (
+    <td className={`${td} text-right ${ed ? '!p-0.5' : ''}`}>
+      {ed
+        ? <In value={money(mkt[key])} onChange={(v) => ed.mkt({ [key]: digitsOf(v) })} className="text-right" inputMode="numeric" placeholder="0" />
+        : fmtNum(mkt[key])}
+    </td>
+  );
   return (
     <Sheet>
       <Letterhead />
-      <h1 className="text-center text-[17px] font-extrabold mt-2">BẢNG ĐỐI SOÁT HOA HỒNG PKD - MARKETING THÁNG {periodLabel(period)}</h1>
-      <div className="mt-5 grid grid-cols-[22mm_1fr] gap-y-0.5 text-[11px]">
-        <b>Tên người lập:</b><span>{who.name}</span>
-        <b>Vị trí:</b><span>{who.title}</span>
-        <b>Phòng ban:</b><span>{who.dept}</span>
-      </div>
+      <PeriodTitle prefix="BẢNG ĐỐI SOÁT HOA HỒNG PKD - MARKETING" period={period} ed={ed} />
+      <Meta who={who} ed={ed} />
       <p className="mt-3 text-[11px]">PKD đề xuất bảng đối soát hoa hồng của {who.dept || 'Phòng kinh doanh'} - MKT Ads tháng {periodLabel(period)} như sau ạ:</p>
 
       <table className="w-full border-collapse mt-2 text-[11px]">
@@ -281,23 +353,31 @@ export function MktDoc({ s }) {
             <th className={th}>Chi phí thực tế</th>
             <th className={th}>Doanh thu mục tiêu</th>
             <th className={th}>Doanh thu thực tế</th>
-            <th className={th}>% Hoàn thành</th>
-            <th className={th}>Thưởng {mkt.rate}% {mkt.base === 'over' ? 'phần vượt kế hoạch' : 'doanh thu thực tế'}</th>
+            <th className={th}>% Hoàn thành<span className="block font-normal text-[9px]">(= thực tế ÷ mục tiêu)</span></th>
+            <th className={th}>
+              <span>
+                Thưởng{' '}
+                {ed
+                  ? <span className="inline-block w-8 align-baseline"><In value={mkt.rate} onChange={(v) => ed.mkt({ rate: decimalOf(v) })} className="text-center font-bold" inputMode="decimal" /></span>
+                  : mkt.rate}
+                % {mkt.base === 'over' ? 'phần vượt kế hoạch' : 'doanh thu thực tế'}
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className={`${td} text-right`}>{fmtNum(mkt.costProposed)}</td>
-            <td className={`${td} text-right`}>{fmtNum(mkt.costActual)}</td>
-            <td className={`${td} text-right`}>{fmtNum(mkt.target)}</td>
-            <td className={`${td} text-right`}>{fmtNum(mkt.actual)}</td>
+            {moneyCell('costProposed')}
+            {moneyCell('costActual')}
+            {moneyCell('target')}
+            {moneyCell('actual')}
             <td className={`${td} text-center`}>{String(pct).replace('.', ',')}%</td>
             <td className={`${td} text-right font-bold`}>{fmtNum(M.reward)}</td>
           </tr>
         </tbody>
       </table>
 
-      <Signs cols={[{ role: 'Giám đốc', name: who.gd }, { role: 'Kế toán', name: who.kt }, { role: 'TP. Kinh doanh', name: who.name }]} />
+      <Signs cols={comSigns(who, ed)} />
     </Sheet>
   );
 }

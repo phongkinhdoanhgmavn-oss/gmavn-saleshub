@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Lock, LogOut, Plus, Trash2, Printer, Wand2 } from 'lucide-react';
+import { Lock, LogOut, Plus, Trash2, Printer, Wand2, ChevronDown } from 'lucide-react';
 import { PageHeader, Chip, Card, useToast } from '../lib/ui';
 import { fmtNum, maskDate, todayVN } from '../lib/format';
 import { isUnlocked, lock, tryUnlock, waitSeconds, loadState, saveState, uid, PRODUCTS, blankSalesRow, salesCalc, mktCalc, adsRevenue, payTotal, periodLabel } from '../lib/manager';
@@ -45,6 +45,21 @@ function Gate({ onOk }) {
           <button className="btn-primary w-full h-12" disabled={busy}>{busy ? 'Đang kiểm tra...' : 'Mở khóa'}</button>
         </form>
       </Card>
+    </div>
+  );
+}
+
+// Khối thu gọn: mặc định gấp lại cho đỡ diện tích, bấm vào tiêu đề để mở ra
+function Fold({ title, summary, dark = false, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={dark ? 'rounded-2xl bg-cara text-kem' : 'bg-white rounded-xl2 shadow-card border border-kem-deep/60'}>
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="w-full flex items-center gap-3 px-4 py-3 text-left">
+        <ChevronDown className={`w-5 h-5 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className="font-heading font-bold shrink-0">{title}</span>
+        {!open && summary && <span className={`flex-1 min-w-0 truncate text-right text-sm ${dark ? 'text-pas' : 'text-nau'}`}>{summary}</span>}
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
     </div>
   );
 }
@@ -121,7 +136,8 @@ export default function Manage() {
   };
   const delRow = (id) => set('pay', { rows: pay.rows.length > 1 ? pay.rows.filter((r) => r.id !== id) : [{ id: uid(), inv: '', date: '', content: '', amount: 0, note: '' }] });
   const per = periodLabel(s.period);
-  // Điền trực tiếp trên giấy xem trước (giấy đề nghị thanh toán)
+  const { sales, mkt } = s;
+  // Điền trực tiếp trên giấy xem trước
   const ed = {
     who: (p) => set('who', p),
     pay: (p) => set('pay', p),
@@ -132,10 +148,20 @@ export default function Manage() {
       set('pay', { rows });
     },
     del: (i) => delRow(pay.rows[i].id),
+    period: (p) => set('period', p),
+    sales: (p) => set('sales', p),
+    srow: (i, patch) => {
+      const rows = [...sales.rows];
+      while (rows.length <= i) rows.push(blankSalesRow());
+      rows[i] = { ...rows[i], ...patch };
+      set('sales', { rows });
+    },
+    sdel: (i) => delSRow(sales.rows[i].id),
+    sadd: () => addSRow(),
+    mkt: (p) => set('mkt', p),
   };
 
   // ----- Hoa hồng Sales -----
-  const { sales, mkt } = s;
   const setSRow = (id, patch) => set('sales', { rows: sales.rows.map((r) => (r.id === id ? { ...r, ...patch } : r)) });
   const addSRow = () => set('sales', { rows: [...sales.rows, blankSalesRow()] });
   const delSRow = (id) => set('sales', { rows: sales.rows.length > 1 ? sales.rows.filter((r) => r.id !== id) : sales.rows });
@@ -151,8 +177,8 @@ export default function Manage() {
         right={<button className="btn-ghost shrink-0" onClick={() => { lock(); setOk(false); }}><LogOut className="w-4 h-4" /> Khóa lại</button>}
       />
 
-      <Card className="p-4 space-y-3">
-        <h2 className="font-heading font-bold">Thông tin chung (lưu trên máy này, điền một lần)</h2>
+      <Fold title="Thông tin chung" summary={`${s.who.name || 'Chưa điền tên'} · tháng ${periodLabel(s.period)}`}>
+        <p className="text-xs text-nau mb-3">Lưu trên máy này, điền một lần. Cũng sửa thẳng được trên giấy bên dưới.</p>
         <div className="grid sm:grid-cols-3 gap-3">
           <Txt label="Người lập" value={s.who.name} onChange={(v) => set('who', { name: v })} placeholder="Họ và tên" />
           <Txt label="Chức danh" value={s.who.title} onChange={(v) => set('who', { title: v })} placeholder="Trưởng phòng kinh doanh" />
@@ -167,7 +193,7 @@ export default function Manage() {
             </div>
           </div>
         </div>
-      </Card>
+      </Fold>
 
       <div className="flex flex-wrap gap-2 mt-5">
         <Chip active={tab === 'pay'} onClick={() => setTab('pay')}>Đề nghị thanh toán</Chip>
@@ -261,7 +287,10 @@ export default function Manage() {
 
       {tab === 'sales' && (
         <div className="mt-4 space-y-4">
-          <Card className="p-4 space-y-3">
+          <Card className="p-4 hidden lg:block">
+            <p className="text-sm text-nau">Điền thẳng trên giấy bên dưới: bấm vào ô để gõ, chọn sản phẩm ngay trong bảng. Doanh thu ghi nhận = doanh thu thực tế × % ghi nhận, tự tính. Rê chuột vào STT rồi bấm × để xóa đơn.</p>
+          </Card>
+          <Card className="p-4 space-y-3 lg:hidden">
             <h2 className="font-heading font-bold">Đối soát hoa hồng Phòng kinh doanh tháng {per}</h2>
             <PeriodInput period={s.period} onChange={(p) => set('period', p)} />
             <div className="grid sm:grid-cols-2 gap-3">
@@ -298,9 +327,8 @@ export default function Manage() {
             <button className="btn-ghost" onClick={addSRow}><Plus className="w-4 h-4" /> Thêm đơn</button>
           </Card>
 
-          <div className="rounded-2xl bg-cara text-kem p-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-pas">Kết quả tính</p>
-            <dl className="mt-3 space-y-2 text-sm">
+          <Fold dark title="Kết quả tính và công thức" summary={`Tổng ${fmtNum(SC.grand)}đ · ${String(pctShown).replace('.', ',')}% KPI`}>
+            <dl className="space-y-2 text-sm">
               {[
                 ['Tổng doanh thu thực tế', fmtNum(SC.actualTotal), 'Cộng cột "Doanh thu thực tế"'],
                 ['Tổng doanh thu ghi nhận', fmtNum(SC.recogTotal), 'Cộng từng đơn: doanh thu thực tế × % ghi nhận'],
@@ -320,13 +348,24 @@ export default function Manage() {
               </div>
             </dl>
             <p className="text-xs text-kem/70 mt-3">Công thức giống trang KPI: hoa hồng tính trên toàn bộ doanh thu ghi nhận, từ 80% KPI mới có (4% hoặc 5%), thưởng 2 triệu từ 100% và 5 triệu từ 120%.</p>
-          </div>
+          </Fold>
         </div>
       )}
 
       {tab === 'mkt' && (
         <div className="mt-4 space-y-4">
-          <Card className="p-4 space-y-3">
+          <Card className="p-4 hidden lg:block space-y-3">
+            <p className="text-sm text-nau">Điền thẳng trên giấy bên dưới: 4 ô số và tỷ lệ thưởng. % hoàn thành và tiền thưởng tự tính.</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={lbl}>Thưởng tính trên</span>
+              <Chip active={mkt.base === 'actual'} onClick={() => set('mkt', { base: 'actual' })}>Doanh thu thực tế</Chip>
+              <Chip active={mkt.base === 'over'} onClick={() => set('mkt', { base: 'over' })}>Phần vượt kế hoạch</Chip>
+              <button className="btn-ghost" onClick={() => { set('mkt', { actual: adsRevenue(sales) }); toast('Đã lấy doanh thu các đơn nguồn Ads'); }} disabled={!adsRevenue(sales)}>
+                <Wand2 className="w-4 h-4" /> Lấy doanh thu thực tế từ đơn nguồn Ads ({fmtNum(adsRevenue(sales))}đ)
+              </button>
+            </div>
+          </Card>
+          <Card className="p-4 space-y-3 lg:hidden">
             <h2 className="font-heading font-bold">Đối soát thưởng Marketing tháng {per}</h2>
             <PeriodInput period={s.period} onChange={(p) => set('period', p)} />
             <div className="grid sm:grid-cols-2 gap-3">
@@ -346,9 +385,8 @@ export default function Manage() {
             </button>
           </Card>
 
-          <div className="rounded-2xl bg-cara text-kem p-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-pas">Kết quả tính (tự nhảy khi anh điền số)</p>
-            <dl className="mt-3 space-y-2 text-sm">
+          <Fold dark title="Kết quả tính và công thức" summary={`Thưởng ${fmtNum(MC.reward)}đ · ${String(mPct).replace('.', ',')}% kế hoạch`}>
+            <dl className="space-y-2 text-sm">
               <div>
                 <div className="flex justify-between gap-3"><dt className="text-kem/85">% hoàn thành kế hoạch</dt><dd className="font-bold">{String(mPct).replace('.', ',')}%</dd></div>
                 <p className="text-[11px] text-kem/60 mt-0.5">= doanh thu thực tế ÷ doanh thu mục tiêu = {fmtNum(mkt.actual)} ÷ {fmtNum(mkt.target)}</p>
@@ -362,7 +400,7 @@ export default function Manage() {
                 <p className="text-[11px] text-kem/60 mt-0.5">= {fmtNum(MC.base)} × {mkt.rate || 0}%</p>
               </div>
             </dl>
-          </div>
+          </Fold>
         </div>
       )}
 
@@ -372,7 +410,7 @@ export default function Manage() {
           <button className="btn-primary" onClick={print}><Printer className="w-4 h-4" /> In hoặc lưu PDF</button>
         </div>
         <div className="overflow-x-auto rounded-xl border border-kem-deep bg-kem-deep/50 p-3">
-          <div className="mx-auto w-max shadow-card"><Doc s={s} ed={tab === 'pay' ? ed : null} /></div>
+          <div className="mx-auto w-max shadow-card"><Doc s={s} ed={ed} /></div>
         </div>
         <p className="text-xs text-nau mt-2">Bấm nút trên, chọn "Lưu thành PDF" (hoặc chọn máy in), khổ A4, tắt "Đầu trang và chân trang" cho gọn.</p>
       </section>
