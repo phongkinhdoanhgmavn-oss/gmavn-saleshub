@@ -30,6 +30,16 @@
   }
 }
 
+/* Khu Quản lý: tờ in gắn riêng vào body, khi in ẩn toàn bộ app */
+#print-root { display: none; }
+@media print {
+  @page { size: A4; margin: 0; }
+  #root { display: none !important; }
+  #print-root { display: block; }
+  body { background: #fff; }
+  .print-sheet { box-shadow: none !important; }
+}
+
 .field {
   @apply w-full h-11 rounded-xl border border-kem-deep bg-white px-3.5 text-base text-cara placeholder:text-nau-soft/70 focus:border-cam focus:outline-none focus:ring-2 focus:ring-cam/25;
 }

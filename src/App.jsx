@@ -6,6 +6,7 @@ import Quote from './pages/Quote';
 import Library from './pages/Library';
 import Kpi from './pages/Kpi';
 import Invoice from './pages/Invoice';
+import Manage from './pages/Manage';
 
 // Xử lý từ chối đã chuyển vào Kho: link cũ tự chuyển sang
 function ObjectionsRedirect() {
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="hoa-don" element={<Invoice />} />
         <Route path="kpi" element={<Kpi />} />
         <Route path="kho" element={<Library />} />
+        <Route path="quan-ly" element={<Manage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

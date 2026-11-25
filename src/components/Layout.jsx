@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, Target, MessageSquareText, Calculator, BookOpen, Search, Phone, MapPin } from 'lucide-react';
+import { Home, Target, MessageSquareText, Calculator, BookOpen, Search, Phone, MapPin, Lock } from 'lucide-react';
 import SearchPalette from './SearchPalette';
+import { isUnlocked } from '../lib/manager';
 import { CONTACT } from '../config';
 
 const NAV = [
@@ -15,7 +16,8 @@ const NAV = [
 export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false);
   const loc = useLocation();
-  const items = NAV;
+  // Mục Quản lý chỉ hiện ở thanh menu sau khi đã nhập mã (Sales không thấy); vào lần đầu bằng đường dẫn /quan-ly
+  const items = isUnlocked() ? [...NAV, { to: '/quan-ly', label: 'Quản lý', icon: Lock }] : NAV;
 
   useEffect(() => {
     const onKey = (e) => {
