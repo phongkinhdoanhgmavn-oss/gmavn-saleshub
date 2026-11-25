@@ -1,15 +1,29 @@
 // Các mẫu giấy để in hoặc lưu PDF: giấy đề nghị thanh toán và 2 bảng đối soát hoa hồng. Mẫu bám theo file Excel và PDF của công ty.
-import { fmtNum, todayVN } from '../lib/format';
+import { fmtNum, todayVN, maskDate } from '../lib/format';
 import { payTotal, periodLabel, salesCalc, mktCalc } from '../lib/manager';
 
 const COMPANY = 'CÔNG TY CỔ PHẦN GIÁO DỤC GMA VIỆT NAM';
-const ADDRESS = 'N024, LK 829 Khu Bờ Hội, Phường La Khê, Quận Hà Đông, Thành phố Hà Nội, Việt Nam';
+const ADDRESS_1 = 'N024, LK 829 Khu Bờ Hội, Phường La Khê, Quận Hà Đông,';
+const ADDRESS_2 = 'Thành phố Hà Nội, Việt Nam';
 const SITE = 'https://gmavietnam.com/';
 const MAIL = 'gmavietnam.edu@gmail.com';
 const PHONE = '0981 586 907';
 
 const money = (n) => (n ? fmtNum(n) : '');
 const dash = (s, w = 'w-40') => (s ? <b className="font-semibold">{s}</b> : <span className={`inline-block ${w} border-b border-dotted border-black align-baseline`}>&nbsp;</span>);
+
+// Chế độ điền trực tiếp: ô nhập trong suốt nằm ngay trên giấy, rê chuột thì sáng lên. Khi in thì vẽ chữ thường (ed = null).
+const inCls = 'bg-transparent outline-none w-full min-w-0 rounded-sm px-0.5 hover:bg-cam-soft/70 focus:bg-cam-soft placeholder:font-normal placeholder:text-black/25';
+function In({ value, onChange, className = '', ...p }) {
+  return <input className={`${inCls} ${className}`} value={value ?? ''} onChange={(e) => onChange(e.target.value)} autoComplete="off" {...p} />;
+}
+function Chk({ on, onClick }) {
+  const cls = 'inline-block w-3.5 h-3.5 border border-black text-center leading-[12px] text-[11px] font-bold align-middle mx-1';
+  return onClick
+    ? <button type="button" onClick={onClick} className={`${cls} bg-white hover:bg-cam-soft cursor-pointer`} aria-pressed={on}>{on ? 'X' : ''}</button>
+    : <span className={cls}>{on ? 'X' : ''}</span>;
+}
+const digitsOf = (s) => parseInt(String(s).replace(/\D/g, ''), 10) || 0;
 
 export function Sheet({ children }) {
   return (
@@ -23,9 +37,11 @@ function Letterhead() {
   return (
     <div className="flex items-start justify-between gap-4 mb-5">
       <img src="/logo.png" alt="GMA" className="h-20 object-contain" />
-      <div className="text-right text-[10.5px] max-w-[110mm]">
+      {/* Mỗi ý một dòng, không cho tự xuống dòng giữa chừng (trước đây chữ "Nam" rơi xuống dòng dưới) */}
+      <div className="text-right text-[10.5px] leading-[1.5] whitespace-nowrap">
         <p className="font-extrabold text-[13px]">{COMPANY}</p>
-        <p className="mt-1">{ADDRESS}</p>
+        <p className="mt-1">{ADDRESS_1}</p>
+        <p>{ADDRESS_2}</p>
         <p>{PHONE} · {SITE} · {MAIL}</p>
       </div>
     </div>
@@ -38,9 +54,11 @@ function Signs({ cols }) {
       {cols.map((c) => (
         <div key={c.role} className="px-1">
           <p className="font-bold uppercase">{c.role}</p>
-          {c.date !== undefined && <p className="text-[11px] mt-1">Ngày: {c.date}</p>}
+          {c.date !== undefined && (c.onDate
+            ? <p className="text-[11px] mt-1 flex items-center justify-center gap-1">Ngày: <In value={c.date} onChange={c.onDate} className="!w-[22mm] text-center" inputMode="numeric" /></p>
+            : <p className="text-[11px] mt-1">Ngày: {c.date}</p>)}
           <div className="h-20" />
-          <p className="font-bold uppercase">{c.name}</p>
+          {c.onName ? <In value={c.name} onChange={c.onName} className="text-center font-bold uppercase" placeholder="Họ tên" /> : <p className="font-bold uppercase">{c.name}</p>}
         </div>
       ))}
     </div>
@@ -50,13 +68,36 @@ function Signs({ cols }) {
 const th = 'border border-black px-1.5 py-1 font-bold text-center';
 const td = 'border border-black px-1.5 py-1';
 
-export function PayDoc({ s }) {
+export function PayDoc({ s, ed = null }) {
   const { who, pay } = s;
   const total = payTotal(pay);
   const date = pay.docDate || todayVN();
-  const box = (on) => <span className="inline-block w-3.5 h-3.5 border border-black text-center leading-[12px] text-[11px] font-bold align-middle mx-1">{on ? 'X' : ''}</span>;
+  const box = (on, onClick) => <Chk on={on} onClick={ed ? onClick : undefined} />;
   const rows = [...pay.rows];
   while (rows.length < 6) rows.push(null);
+  // Ô gạch chấm: điền trực tiếp khi ed, còn lại in chữ
+  const fld = (val, key, w) => (ed
+    ? <span className={`inline-block align-baseline ${w}`}><In value={val} onChange={(v) => ed.pay({ [key]: v })} className="border-b border-dotted border-black rounded-none font-semibold" /></span>
+    : dash(val, w));
+  const whoFld = (val, key, w, ph) => (ed
+    ? <span className={`inline-block align-baseline ${w}`}><In value={val} onChange={(v) => ed.who({ [key]: v })} className="border-b border-dotted border-black rounded-none font-semibold" placeholder={ph} /></span>
+    : dash(val, w));
+  const cell = (r, i, key, cls, props = {}) => {
+    if (!ed) return <td className={`${td} ${cls}`}>{key === 'amount' ? (r ? money(r.amount) : '') : r?.[key]}</td>;
+    const v = r ? r[key] : '';
+    const isAmt = key === 'amount';
+    return (
+      <td className={`${td} ${cls} !p-0.5`}>
+        <In
+          value={isAmt ? money(v) : v}
+          onChange={(x) => ed.row(i, { [key]: isAmt ? digitsOf(x) : key === 'date' ? maskDate(x) : x })}
+          className={cls.includes('text-right') ? 'text-right' : cls.includes('text-center') ? 'text-center' : ''}
+          inputMode={isAmt || key === 'date' ? 'numeric' : undefined}
+          {...props}
+        />
+      </td>
+    );
+  };
   return (
     <Sheet>
       <Letterhead />
@@ -64,11 +105,11 @@ export function PayDoc({ s }) {
       <p className="text-center italic">(Công ty cổ phần giáo dục GMA Việt Nam)</p>
 
       <div className="mt-5 grid grid-cols-[1fr_auto] gap-x-6 gap-y-1.5">
-        <p>Họ và tên: {dash(who.name, 'w-52')}</p>
-        <p>Chức danh: {dash(who.title, 'w-28')}</p>
-        <p>Phòng/Ban: {dash(who.dept, 'w-52')}</p>
+        <p>Họ và tên: {whoFld(who.name, 'name', 'w-52', 'Họ và tên')}</p>
+        <p>Chức danh: {whoFld(who.title, 'title', ed ? 'w-52' : 'w-28', 'Chức danh')}</p>
+        <p>Phòng/Ban: {whoFld(who.dept, 'dept', 'w-52', 'Phòng/Ban')}</p>
       </div>
-      <p className="mt-2">Thanh toán cho: {box(pay.payTo === 'nv')} N/viên {box(pay.payTo === 'ncc')} Nhà cung cấp</p>
+      <p className="mt-2">Thanh toán cho: {box(pay.payTo === 'nv', () => ed.pay({ payTo: 'nv' }))} N/viên {box(pay.payTo === 'ncc', () => ed.pay({ payTo: 'ncc' }))} Nhà cung cấp</p>
 
       <table className="w-full border-collapse mt-3">
         <thead>
@@ -83,47 +124,57 @@ export function PayDoc({ s }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r?.id ?? `e${i}`} className="h-7 align-top">
-              <td className={`${td} text-center`}>{r ? i + 1 : ''}</td>
-              <td className={td}>{r?.inv}</td>
-              <td className={`${td} text-center`}>{r?.date}</td>
-              <td className={td}>{r?.content}</td>
-              <td className={`${td} text-right`}>{r ? money(r.amount) : ''}</td>
-              <td className={td}>{r?.note}</td>
+            <tr key={ed ? i : (r?.id ?? `e${i}`)} className="h-7 align-top group">
+              <td className={`${td} text-center relative`}>
+                {r ? i + 1 : ''}
+                {ed && r && pay.rows.length > 0 && (
+                  <button type="button" onClick={() => ed.del(i)} title="Xóa dòng này" aria-label={`Xóa dòng ${i + 1}`} className="hidden group-hover:grid absolute inset-0 place-items-center bg-white text-bad font-bold">×</button>
+                )}
+              </td>
+              {cell(r, i, 'inv', '')}
+              {cell(r, i, 'date', 'text-center', { placeholder: 'dd/mm/yyyy' })}
+              {cell(r, i, 'content', '', { placeholder: i === 0 ? 'Nội dung' : '' })}
+              {cell(r, i, 'amount', 'text-right', { placeholder: i === 0 ? '0' : '' })}
+              {cell(r, i, 'note', '')}
             </tr>
           ))}
           <tr>
             <td className={`${td} font-bold`} colSpan={4}>
               Tổng cộng / Total
-              <span className="ml-4 font-normal">{box(pay.currency === 'VND')} VND {box(pay.currency === 'USD')} USD {box(pay.currency === 'JPY')} JPY</span>
+              <span className="ml-4 font-normal">
+                {box(pay.currency === 'VND', () => ed.pay({ currency: 'VND' }))} VND {box(pay.currency === 'USD', () => ed.pay({ currency: 'USD' }))} USD {box(pay.currency === 'JPY', () => ed.pay({ currency: 'JPY' }))} JPY
+              </span>
             </td>
             <td className={`${td} text-right font-bold`}>{fmtNum(total)}</td>
             <td className={td} />
           </tr>
         </tbody>
       </table>
+      {ed && <button type="button" onClick={() => ed.row(Math.max(6, pay.rows.length), {})} className="mt-1 text-[11px] font-semibold text-cam-dark hover:underline">+ Thêm dòng</button>}
 
       <p className="mt-4 font-bold text-center">Phương thức thanh toán</p>
-      <p className="mt-1">{box(pay.method === 'cash')} Tiền mặt {box(pay.method === 'cheque')} Séc {box(pay.method === 'transfer')} Chuyển khoản</p>
+      <p className="mt-1">
+        {box(pay.method === 'cash', () => ed.pay({ method: 'cash' }))} Tiền mặt {box(pay.method === 'cheque', () => ed.pay({ method: 'cheque' }))} Séc {box(pay.method === 'transfer', () => ed.pay({ method: 'transfer' }))} Chuyển khoản
+      </p>
       <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1.5">
         <div className="space-y-1.5">
-          <p>Tên người nhận tiền: {dash(pay.recvName, 'w-40')}</p>
-          <p>Số CMND/CCCD: {dash(pay.idNo, 'w-40')}</p>
-          <p>Ngày cấp: {dash(pay.idDate, 'w-40')}</p>
+          <p>Tên người nhận tiền: {fld(pay.recvName, 'recvName', 'w-40')}</p>
+          <p>Số CMND/CCCD: {fld(pay.idNo, 'idNo', 'w-40')}</p>
+          <p>Ngày cấp: {fld(pay.idDate, 'idDate', 'w-40')}</p>
         </div>
         <div className="space-y-1.5">
-          <p>Tên người thụ hưởng: {dash(pay.benName, 'w-36')}</p>
-          <p>Số tài khoản: {dash(pay.acctNo, 'w-40')}</p>
-          <p>Tên ngân hàng: {dash(pay.bank, 'w-40')}</p>
+          <p>Tên người thụ hưởng: {fld(pay.benName, 'benName', 'w-36')}</p>
+          <p>Số tài khoản: {fld(pay.acctNo, 'acctNo', 'w-40')}</p>
+          <p>Tên ngân hàng: {fld(pay.bank, 'bank', 'w-40')}</p>
         </div>
       </div>
 
       <Signs
         cols={[
-          { role: 'Giám đốc', date: date, name: who.gd },
-          { role: 'Kế toán trưởng', date: date, name: who.kt },
-          { role: 'Trưởng Phòng/Ban', date: date, name: who.name },
-          { role: 'Người đề nghị', date: date, name: who.name },
+          { role: 'Giám đốc', date, name: who.gd, onDate: ed && ((v) => ed.pay({ docDate: maskDate(v) })), onName: ed && ((v) => ed.who({ gd: v })) },
+          { role: 'Kế toán trưởng', date, name: who.kt, onDate: ed && ((v) => ed.pay({ docDate: maskDate(v) })), onName: ed && ((v) => ed.who({ kt: v })) },
+          { role: 'Trưởng Phòng/Ban', date, name: who.name, onDate: ed && ((v) => ed.pay({ docDate: maskDate(v) })), onName: ed && ((v) => ed.who({ name: v })) },
+          { role: 'Người đề nghị', date, name: who.name, onDate: ed && ((v) => ed.pay({ docDate: maskDate(v) })), onName: ed && ((v) => ed.who({ name: v })) },
         ]}
       />
     </Sheet>
@@ -164,7 +215,7 @@ export function SalesDoc({ s }) {
             <th className={th}>Nguồn</th>
             <th className={th}>Doanh thu thực tế</th>
             <th className={th}>% Doanh thu ghi nhận</th>
-            <th className={th}>Doanh thu ghi nhận</th>
+            <th className={th}>Doanh thu ghi nhận<span className="block font-normal text-[9px]">(= thực tế × %)</span></th>
             <th className={th}>NV Sale</th>
             <th className={th}>Notes</th>
           </tr>
@@ -190,15 +241,14 @@ export function SalesDoc({ s }) {
             <td className={`${td} text-right`}>{fmtNum(C.recogTotal)}</td>
             <td className={td} colSpan={2} />
           </tr>
-        </tbody>
-      </table>
-
-      <table className="border-collapse mt-0 ml-auto text-[11px]" style={{ width: '58mm' }}>
-        <tbody>
+          {/* Khoảng cách rồi tới khối tổng hợp: số nằm thẳng cột "Doanh thu ghi nhận" */}
+          <tr aria-hidden="true"><td colSpan={9} className="h-4" /></tr>
           {sumRows.map(([label, val, strong]) => (
             <tr key={label}>
-              <td className={`${td} font-bold`}>{label}</td>
+              <td colSpan={4} />
+              <td className={`${td} font-bold`} colSpan={2}>{label}</td>
               <td className={`${td} text-right ${strong ? 'font-extrabold text-[12.5px]' : ''}`}>{val}</td>
+              <td colSpan={2} />
             </tr>
           ))}
         </tbody>

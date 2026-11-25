@@ -121,6 +121,18 @@ export default function Manage() {
   };
   const delRow = (id) => set('pay', { rows: pay.rows.length > 1 ? pay.rows.filter((r) => r.id !== id) : [{ id: uid(), inv: '', date: '', content: '', amount: 0, note: '' }] });
   const per = periodLabel(s.period);
+  // Điền trực tiếp trên giấy xem trước (giấy đề nghị thanh toán)
+  const ed = {
+    who: (p) => set('who', p),
+    pay: (p) => set('pay', p),
+    row: (i, patch) => {
+      const rows = [...pay.rows];
+      while (rows.length <= i) rows.push({ id: uid(), inv: '', date: '', content: '', amount: 0, note: '' });
+      rows[i] = { ...rows[i], ...patch };
+      set('pay', { rows });
+    },
+    del: (i) => delRow(pay.rows[i].id),
+  };
 
   // ----- Hoa hồng Sales -----
   const { sales, mkt } = s;
@@ -165,7 +177,19 @@ export default function Manage() {
 
       {tab === 'pay' && (
         <div className="mt-4 space-y-4">
-          <Card className="p-4 space-y-3">
+          {/* Máy tính: điền thẳng trên giấy bên dưới. Các thẻ nhập bên dưới chỉ hiện trên điện thoại cho dễ gõ. */}
+          <Card className="p-4 hidden lg:block">
+            <p className="text-sm text-nau">Điền thẳng trên giấy bên dưới: bấm vào ô để gõ, bấm vào ô vuông để chọn. Tổng cộng tự cộng. Rê chuột vào số thứ tự dòng rồi bấm × để xóa dòng.</p>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <button className="btn-ghost" onClick={() => { addRow({ content: `Hoa hồng PKD tháng ${per}`, amount: SC.grand, date: '' }); toast('Đã thêm khoản hoa hồng PKD'); }} disabled={!SC.grand}>
+                <Wand2 className="w-4 h-4" /> Thêm hoa hồng PKD ({fmtNum(SC.grand)}đ)
+              </button>
+              <button className="btn-ghost" onClick={() => { addRow({ content: `Thưởng Marketing tháng ${per}`, amount: MC.reward, date: '' }); toast('Đã thêm khoản thưởng Marketing'); }} disabled={!MC.reward}>
+                <Wand2 className="w-4 h-4" /> Thêm thưởng Marketing ({fmtNum(MC.reward)}đ)
+              </button>
+            </div>
+          </Card>
+          <Card className="p-4 space-y-3 lg:hidden">
             <h2 className="font-heading font-bold">Các khoản đề nghị thanh toán</h2>
             <div className="grid sm:grid-cols-2 gap-3">
               <label className="block"><span className={lbl}>Ngày ký (mặc định hôm nay, sửa được)</span>
@@ -210,12 +234,12 @@ export default function Manage() {
               </button>
             </div>
             <div className="rounded-xl bg-cara text-kem px-4 py-3 flex items-baseline justify-between gap-3">
-              <span className="text-sm">Tổng cộng (tự cộng)</span>
+              <span className="text-sm">Tổng cộng = cộng cột "Số tiền" ({pay.rows.filter((r) => r.amount).length} khoản)</span>
               <b className="font-heading font-extrabold text-xl text-pas">{fmtNum(payTotal(pay))} {pay.currency}</b>
             </div>
           </Card>
 
-          <Card className="p-4 space-y-3">
+          <Card className="p-4 space-y-3 lg:hidden">
             <h2 className="font-heading font-bold">Phương thức thanh toán</h2>
             <div className="flex flex-wrap gap-2">
               {[['transfer', 'Chuyển khoản'], ['cash', 'Tiền mặt'], ['cheque', 'Séc']].map(([k, l]) => <Chip key={k} active={pay.method === k} onClick={() => set('pay', { method: k })}>{l}</Chip>)}
@@ -265,7 +289,9 @@ export default function Manage() {
                     <Txt label="NV Sale" value={r.sale} onChange={(v) => setSRow(r.id, { sale: v })} />
                     <Txt label="Notes" value={r.note} onChange={(v) => setSRow(r.id, { note: v })} />
                   </div>
-                  <p className="text-xs text-nau">Doanh thu ghi nhận: <b className="text-cara">{fmtNum(SC.rows[i]?.recog)}đ</b></p>
+                  <p className="text-xs text-nau">
+                    <b>Doanh thu ghi nhận</b> = doanh thu thực tế × % ghi nhận = {fmtNum(r.actual)} × {r.pct || 0}% = <b className="text-cam-dark text-sm">{fmtNum(SC.rows[i]?.recog)}đ</b>
+                  </p>
                 </div>
               ))}
             </div>
@@ -276,16 +302,22 @@ export default function Manage() {
             <p className="text-xs font-bold uppercase tracking-wider text-pas">Kết quả tính</p>
             <dl className="mt-3 space-y-2 text-sm">
               {[
-                ['Tổng doanh thu thực tế', fmtNum(SC.actualTotal)],
-                ['Tổng doanh thu ghi nhận', fmtNum(SC.recogTotal)],
-                ['Tỷ lệ hoàn thành KPI', `${String(pctShown).replace('.', ',')}% (${SC.tier})`],
-                [`Hoa hồng ${Math.round(SC.rate * 100)}%`, fmtNum(SC.comm)],
-                ['Thưởng vượt KPI', fmtNum(SC.bonus)],
-                ['Lương cơ bản', fmtNum(SC.salary)],
-              ].map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-3"><dt className="text-kem/85">{k}</dt><dd className="font-bold">{v}</dd></div>
+                ['Tổng doanh thu thực tế', fmtNum(SC.actualTotal), 'Cộng cột "Doanh thu thực tế"'],
+                ['Tổng doanh thu ghi nhận', fmtNum(SC.recogTotal), 'Cộng từng đơn: doanh thu thực tế × % ghi nhận'],
+                ['Tỷ lệ hoàn thành KPI', `${String(pctShown).replace('.', ',')}% (${SC.tier})`, `= ${fmtNum(SC.recogTotal)} ÷ ${fmtNum(sales.kpi)} (KPI)`],
+                [`Hoa hồng ${Math.round(SC.rate * 100)}%`, fmtNum(SC.comm), `= ${fmtNum(SC.recogTotal)} × ${Math.round(SC.rate * 100)}% (dưới 80% KPI: 0%, 80 đến 90%: 4%, từ 91%: 5%)`],
+                ['Thưởng vượt KPI', fmtNum(SC.bonus), 'Từ 100% KPI: 2.000.000. Từ 120% KPI: 5.000.000. Không cộng dồn'],
+                ['Lương cơ bản', fmtNum(SC.salary), 'Anh nhập ở trên'],
+              ].map(([k, v, f]) => (
+                <div key={k}>
+                  <div className="flex justify-between gap-3"><dt className="text-kem/85">{k}</dt><dd className="font-bold">{v}</dd></div>
+                  <p className="text-[11px] text-kem/60 mt-0.5">{f}</p>
+                </div>
               ))}
-              <div className="flex justify-between gap-3 pt-2 border-t border-white/20 text-base"><dt>Tổng hoa hồng + thưởng</dt><dd className="font-heading font-extrabold text-pas">{fmtNum(SC.grand)}đ</dd></div>
+              <div className="pt-2 border-t border-white/20">
+                <div className="flex justify-between gap-3 text-base"><dt>Tổng hoa hồng + thưởng</dt><dd className="font-heading font-extrabold text-pas">{fmtNum(SC.grand)}đ</dd></div>
+                <p className="text-[11px] text-kem/60 mt-0.5">= hoa hồng + thưởng vượt KPI + lương cơ bản = {fmtNum(SC.comm)} + {fmtNum(SC.bonus)} + {fmtNum(SC.salary)}</p>
+              </div>
             </dl>
             <p className="text-xs text-kem/70 mt-3">Công thức giống trang KPI: hoa hồng tính trên toàn bộ doanh thu ghi nhận, từ 80% KPI mới có (4% hoặc 5%), thưởng 2 triệu từ 100% và 5 triệu từ 120%.</p>
           </div>
@@ -317,9 +349,18 @@ export default function Manage() {
           <div className="rounded-2xl bg-cara text-kem p-5">
             <p className="text-xs font-bold uppercase tracking-wider text-pas">Kết quả tính (tự nhảy khi anh điền số)</p>
             <dl className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between gap-3"><dt className="text-kem/85">% hoàn thành kế hoạch</dt><dd className="font-bold">{String(mPct).replace('.', ',')}%</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-kem/85">Tính thưởng trên</dt><dd className="font-bold">{fmtNum(MC.base)}đ</dd></div>
-              <div className="flex justify-between gap-3 pt-2 border-t border-white/20 text-base"><dt>Thưởng {mkt.rate || 0}%</dt><dd className="font-heading font-extrabold text-pas">{fmtNum(MC.reward)}đ</dd></div>
+              <div>
+                <div className="flex justify-between gap-3"><dt className="text-kem/85">% hoàn thành kế hoạch</dt><dd className="font-bold">{String(mPct).replace('.', ',')}%</dd></div>
+                <p className="text-[11px] text-kem/60 mt-0.5">= doanh thu thực tế ÷ doanh thu mục tiêu = {fmtNum(mkt.actual)} ÷ {fmtNum(mkt.target)}</p>
+              </div>
+              <div>
+                <div className="flex justify-between gap-3"><dt className="text-kem/85">Tính thưởng trên</dt><dd className="font-bold">{fmtNum(MC.base)}đ</dd></div>
+                <p className="text-[11px] text-kem/60 mt-0.5">{mkt.base === 'over' ? `= phần vượt kế hoạch = ${fmtNum(mkt.actual)} − ${fmtNum(mkt.target)}` : '= doanh thu thực tế'}</p>
+              </div>
+              <div className="pt-2 border-t border-white/20">
+                <div className="flex justify-between gap-3 text-base"><dt>Thưởng {mkt.rate || 0}%</dt><dd className="font-heading font-extrabold text-pas">{fmtNum(MC.reward)}đ</dd></div>
+                <p className="text-[11px] text-kem/60 mt-0.5">= {fmtNum(MC.base)} × {mkt.rate || 0}%</p>
+              </div>
             </dl>
           </div>
         </div>
@@ -331,7 +372,7 @@ export default function Manage() {
           <button className="btn-primary" onClick={print}><Printer className="w-4 h-4" /> In hoặc lưu PDF</button>
         </div>
         <div className="overflow-x-auto rounded-xl border border-kem-deep bg-kem-deep/50 p-3">
-          <div className="mx-auto w-max shadow-card"><Doc s={s} /></div>
+          <div className="mx-auto w-max shadow-card"><Doc s={s} ed={tab === 'pay' ? ed : null} /></div>
         </div>
         <p className="text-xs text-nau mt-2">Bấm nút trên, chọn "Lưu thành PDF" (hoặc chọn máy in), khổ A4, tắt "Đầu trang và chân trang" cho gọn.</p>
       </section>
